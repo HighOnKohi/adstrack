@@ -20,7 +20,7 @@ function Login() {
       <div className="main_content">
         <div className="banner" />
         <div className="login">
-          <div className="header">
+          <div className="header-login">
             <img src={logo} alt="SCT Logo" />
             <h1>Welcome Back!</h1>
           </div>
