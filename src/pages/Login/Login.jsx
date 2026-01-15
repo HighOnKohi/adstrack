@@ -27,7 +27,7 @@ function Login() {
           <div className="credentials">
             <input
               type="text"
-              placeholder="Account ID"
+              placeholder="Username"
               value={accID}
               onChange={(e) => {
                 setAccID(e.target.value);
