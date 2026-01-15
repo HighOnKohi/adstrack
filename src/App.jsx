@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Login from "./pages/Login/Login.jsx";
-import Homepage from "./pages/Hompage/Homepage.jsx";
+import Homepage from "./pages/Homepage/Homepage.jsx";
 import Sidebar from "./GlobalComponents/Sidebar";
 import Header from "./GlobalComponents/Header";
 import "./App.css";
