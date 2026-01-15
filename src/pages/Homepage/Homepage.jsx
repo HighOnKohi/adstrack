@@ -2,7 +2,7 @@ import Sidebar from "../../GlobalComponents/Sidebar";
 import Header from "../../GlobalComponents/Header";
 import Card from "./Components/Card";
 
-import "../css/Homepage.css";
+import "./Homepage.css";
 
 export default function Homepage() {
   return (

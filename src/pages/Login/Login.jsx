@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import "../css/Login.css";
-import logo from "../assets/sct-logo2.png";
+import "./Login.css";
+import logo from "../../assets/sct-logo2.png";
 
 const login = async () => {
   const nav = useNavigate();

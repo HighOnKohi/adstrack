@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 
-import Login from "./pages/Login.jsx";
-import Homepage from "./pages/Hompage/Homepage.jsx";
+import Login from "./pages/Login/Login.jsx";
+import Homepage from "./pages/Homepage/Homepage.jsx";
 import "./App.css";
 
 function App() {
