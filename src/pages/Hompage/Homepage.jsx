@@ -1,6 +1,6 @@
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import Card from "../components/Card";
+import Sidebar from "../../GlobalComponents/Sidebar";
+import Header from "../../GlobalComponents/Header";
+import Card from "./Components/Card";
 
 import "../css/Homepage.css";
 
