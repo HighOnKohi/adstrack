@@ -1,10 +1,12 @@
+*{
+    font-family: "IBM Plex Sans", sans-serif;
+}
+
 body {
     margin: 0;
     padding: 0;
     /* overflow-y: hidden; */
 }
-
-
 
 .main_parent {
     margin: 0;
@@ -69,6 +71,7 @@ body {
 }
 
 .header-login {
+    font-family: "DM Serif Display", serif;
     display: flex;
     flex-direction: column;
     color: black;
