@@ -1,0 +1,8 @@
+export { default as addIcon } from './add.svg?react';
+export { default as analyticsIcon } from './analytics.svg?react';
+export { default as calendarIcon } from './calendar.svg?react';
+export { default as closeIcon } from './close.svg?react';
+export { default as directoryIcon } from './directory.svg?react';
+export { default as homeIcon } from './home.svg?react';
+export { default as inventoryIcon } from './inventory.svg?react';
+export { default as bookIcon } from './book.svg?react';

@@ -23,6 +23,10 @@
     background-color: #A71A2B;
     color: white;
     font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .Search-bar button:focus {
@@ -74,7 +78,7 @@ body {
 
 .sched-form {
     position: relative;
-    background-color: white;
+    background-color: #EFEFEF;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -87,13 +91,14 @@ body {
 }
 
 .sched-input {
+    background-color: #FAFAFA;
     width: 100%;
-    border: 1px solid black;
+    border: 1px transparent;
     box-sizing: border-box;
     color: black;
     padding: 1rem;
     font-size: 16px;
-    border-radius: 1rem;
+    border-radius: 0.4rem;
     box-shadow: black;
     outline: none;
     box-shadow:
@@ -102,6 +107,7 @@ body {
 }
 
 .close-modal-button {
+    filter: brightness(0);
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -141,4 +147,8 @@ body {
     color: white;
     font-weight: 400;
     width: 10vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }

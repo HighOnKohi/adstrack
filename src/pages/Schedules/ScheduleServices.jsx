@@ -57,6 +57,7 @@ export const useScheduleForm = () => {
       const timestamp = new Date();
       await addDoc(collection(db, "Meetings"), {
         ...formData,
+        Notes: formData.Notes || "None",
         Date_Created: timestamp,
         Date_Modified: timestamp,
       });

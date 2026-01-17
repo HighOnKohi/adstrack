@@ -1,4 +1,5 @@
 import "./Schools.css";
+import { addIcon, closeIcon } from "../../assets/Icons/index.js";
 import {
   ProvinceSelector,
   MunicipalitySelector,
@@ -34,7 +35,7 @@ function Schools() {
               className="close-modal-button"
               onClick={() => setShowForm(false)}
             >
-              X
+              <img src={closeIcon} alt="close" />
             </button>
             <h1> Register New School </h1>
 
@@ -45,7 +46,7 @@ function Schools() {
                   name="Name"
                   type="text"
                   className="school-input"
-                  placeholder="School Name"
+                  placeholder="Name of School"
                   value={formData.Name}
                   onChange={handleChange}
                 />
@@ -73,7 +74,7 @@ function Schools() {
                   name="Contact_Person"
                   type="text"
                   className="school-input"
-                  placeholder="Juan Dela Cruz"
+                  placeholder="Name of Contact Person"
                   value={formData.Contact_Person}
                   onChange={handleChange}
                 />
@@ -85,7 +86,7 @@ function Schools() {
                   name="Contact_Num"
                   type="text"
                   className="school-input"
-                  placeholder="09876543210"
+                  placeholder="Contact Number of Person/School"
                   value={formData.Contact_Num}
                   onChange={handleChange}
                 />
@@ -97,7 +98,7 @@ function Schools() {
                   name="Email"
                   type="text"
                   className="school-input"
-                  placeholder="sample@gmail.com"
+                  placeholder="E-mail Address of Contact Person/School"
                   value={formData.Email}
                   onChange={handleChange}
                 />
@@ -124,8 +125,8 @@ function Schools() {
             </div>
 
             <button className="school-submit" onClick={handleSubmit}>
-              {" "}
-              Submit{" "}
+              <img src={addIcon} alt="Add" />
+              Submit
             </button>
           </div>
         </div>

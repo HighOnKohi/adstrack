@@ -1,4 +1,5 @@
 import "./Schedules.css";
+import { addIcon, bookIcon, closeIcon } from "../../assets/Icons/index.js";
 
 import { useScheduleForm } from "./ScheduleServices.jsx";
 
@@ -29,7 +30,8 @@ function Directory() {
             className="schedule-meeting-button"
             onClick={() => setShowForm(true)}
           >
-            SCHEDULE MEETING
+            <img src={bookIcon} alt="Book" />
+            Schedule Meeting
           </button>
         </div>
       </div>
@@ -41,7 +43,7 @@ function Directory() {
               className="close-modal-button"
               onClick={() => setShowForm(false)}
             >
-              X
+              <img src={closeIcon} alt="close" />
             </button>
             <h1> Schedule Meeting </h1>
 
@@ -87,6 +89,7 @@ function Directory() {
                 <input
                   name="Companions"
                   type="text"
+                  placeholder="Name(s) of Companion(s)"
                   className="sched-input"
                   value={formData.Companions}
                   onChange={handleChange}
@@ -98,6 +101,7 @@ function Directory() {
                 <input
                   name="Attendee_Est"
                   type="text"
+                  placeholder="Estimated Number of Attendees"
                   className="sched-input"
                   value={formData.Attendee_Est}
                   onChange={handleChange}
@@ -143,6 +147,7 @@ function Directory() {
                 <label className="sched-input-label">Notes</label>
                 <textarea
                   name="Notes"
+                  placeholder="Notes (Leave blank if none)"
                   className="sched-input"
                   rows="3"
                   value={formData.Notes}
@@ -152,6 +157,7 @@ function Directory() {
             </div>
 
             <button className="sched-submit" onClick={handleSubmit}>
+              <img src={addIcon} alt="Add" />
               Submit
             </button>
           </div>
