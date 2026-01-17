@@ -34,7 +34,7 @@ body {
     color: #555;
 }
 
-.modal-overlay {
+.school-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -87,7 +87,7 @@ body {
     cursor: pointer;
 }
 
-.input-label {
+.school-input-label {
     width: 100%;
     text-align: left;
     font-size: 12px;
@@ -95,19 +95,19 @@ body {
     margin-bottom: 0.25em;
 }
 
-.form-grid {
+.school-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     width: 100%;
 }
 
-.input-group {
+.school-input-group {
     display: flex;
     flex-direction: column;
 }
 
-.full-width {
+.school-full-width {
     grid-column: span 2;
 }
 

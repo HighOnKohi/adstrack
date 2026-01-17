@@ -28,7 +28,7 @@ function Schools() {
       </button>
 
       {showForm && (
-        <div className="modal-overlay">
+        <div className="school-modal-overlay">
           <div className="school-form">
             <button
               className="close-modal-button"
@@ -38,9 +38,9 @@ function Schools() {
             </button>
             <h1> Register New School </h1>
 
-            <div className="form-grid">
-              <div className="input-group full-width">
-                <label className="input-label">Name</label>
+            <div className="school-form-grid">
+              <div className="school-input-group school-full-width">
+                <label className="school-input-label">Name</label>
                 <input
                   name="Name"
                   type="text"
@@ -51,8 +51,8 @@ function Schools() {
                 />
               </div>
 
-              <div className="input-group">
-                <label className="input-label">Category</label>
+              <div className="school-input-group">
+                <label className="school-input-label">Category</label>
                 <select
                   name="Category"
                   className="school-input"
@@ -67,8 +67,8 @@ function Schools() {
                 </select>
               </div>
 
-              <div className="input-group">
-                <label className="input-label">Contact Person</label>
+              <div className="school-input-group">
+                <label className="school-input-label">Contact Person</label>
                 <input
                   name="Contact_Person"
                   type="text"
@@ -79,8 +79,8 @@ function Schools() {
                 />
               </div>
 
-              <div className="input-group">
-                <label className="input-label">Contact Number</label>
+              <div className="school-input-group">
+                <label className="school-input-label">Contact Number</label>
                 <input
                   name="Contact_Num"
                   type="text"
@@ -91,8 +91,8 @@ function Schools() {
                 />
               </div>
 
-              <div className="input-group">
-                <label className="input-label">Email</label>
+              <div className="school-input-group">
+                <label className="school-input-label">Email</label>
                 <input
                   name="Email"
                   type="text"
@@ -103,8 +103,8 @@ function Schools() {
                 />
               </div>
 
-              <div className="input-group">
-                <label className="input-label">Province</label>
+              <div className="school-input-group">
+                <label className="school-input-label">Province</label>
                 <ProvinceSelector
                   name="Province"
                   value={formData.Province}
@@ -112,8 +112,8 @@ function Schools() {
                 />
               </div>
 
-              <div className="input-group">
-                <label className="input-label">Municipality</label>
+              <div className="school-input-group">
+                <label className="school-input-label">Municipality</label>
                 <MunicipalitySelector
                   name="Municipality"
                   province={formData.Province}

@@ -29,3 +29,116 @@
     outline: none;        
     border: none;        
 }
+
+* {
+    box-sizing: border-box;
+    color: black;
+    font-family: "IBM Plex Sans", sans-serif;
+}
+
+* h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "DM Serif Display", serif;
+}
+
+body {
+    margin: 0;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.subtitle {
+    max-width: 37.5rem;
+    color: #555;
+}
+
+.sched-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.sched-form {
+    position: relative;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 60vw;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.sched-input {
+    width: 100%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    color: black;
+    padding: 1rem;
+    font-size: 16px;
+    border-radius: 1rem;
+    box-shadow: black;
+    outline: none;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.close-modal-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sched-input-label {
+    width: 100%;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 0.25em;
+}
+
+.sched-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+}
+
+.sched-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.sched-full-width {
+    grid-column: span 2;
+}
+
+.sched-submit {
+    background-color: #A71A2B;
+    color: white;
+    font-weight: 400;
+    width: 10vw;
+}
