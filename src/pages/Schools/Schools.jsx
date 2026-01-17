@@ -1,3 +1,5 @@
+import "./Schools.css"
+
 function Schools() {
     return(
         <div>

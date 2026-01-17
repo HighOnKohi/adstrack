@@ -1,11 +1,31 @@
-.Label h1 {
-    margin: 0px;
-    margin-top: 40px;
-    color: #2B2B2B;
+.Search-bar input {
+    width: 97%;
+    margin-bottom: 20px;
+    border-width: 0px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 40px;
+    border-radius: 10px;
 }
 
-.Label p {
-    margin-top: 20px;
-    font-weight: 500;
-    color: #2B2B2B;
+.Search-bar input::placeholder {
+    color: black;
+    font-weight: 400;
+}
+
+.Search-bar input:focus {
+    outline: none;        
+    border: none;        
+    border-width: 0px; 
+}
+
+.Search-bar button {
+    background-color: #A71A2B;
+    color: white;
+    font-weight: 400;
+}
+
+.Search-bar button:focus {
+    outline: none;        
+    border: none;        
 }

@@ -9,7 +9,8 @@ function Directory() {
             </div>
 
             <div className="Search-bar"> 
-
+                <input type="text" placeholder="Search school name"/> 
+                <button> add meeting </button>
             </div>
         </div>
     );
