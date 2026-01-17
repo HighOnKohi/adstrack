@@ -6,7 +6,7 @@ export default function Card({ title, icon, text, list }) {
       </div>
 
       <div className="card-body">
-        <h3>{title}</h3>
+        <h3> {title} </h3>
 
         {text && <p>{text}</p>}
 

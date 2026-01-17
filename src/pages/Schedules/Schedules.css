@@ -1,0 +1,11 @@
+.Label h1 {
+    margin: 0px;
+    margin-top: 40px;
+    color: #2B2B2B;
+}
+
+.Label p {
+    margin-top: 20px;
+    font-weight: 500;
+    color: #2B2B2B;
+}

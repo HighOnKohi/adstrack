@@ -5,11 +5,12 @@ import "./Homepage.css";
 export default function Homepage() {
   return (
     <section className="content">
-      <h1>Homepage</h1>
-      <p className="subtitle">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut.
-      </p>
+      <div>
+            <div className="Label">
+                <h1> Homepage </h1>
+                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. </p>
+            </div>
+        </div>
 
       <div className="card-grid">
         <Card
