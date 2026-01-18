@@ -1,4 +1,8 @@
 import "./Schools.css";
+import SchoolCard from "./Components/School-Card.jsx";
+import { useState, useEffect } from "react";
+import { db } from "../../config/fbConf.js";
+import { collection, getDocs } from "firebase/firestore";
 import { addIcon, closeIcon } from "../../assets/Icons/index.js";
 import {
   ProvinceSelector,
@@ -9,6 +13,25 @@ import {
 function Schools() {
   const { showForm, setShowForm, formData, handleChange, handleSubmit } =
     useSchoolForm();
+
+  const[schoolList, setSchoolList] = useState([]);
+
+  useEffect(() => {
+    const fetchSchools = async () => {
+      const schoolsCollection = collection(db, "Schools");
+      const query = await getDocs(schoolsCollection);
+
+      const list = [];
+
+      query.forEach((doc) => {
+        list.push({id: doc.id, data: doc.data()})
+      })
+
+      setSchoolList(list);
+    }
+
+    fetchSchools();
+  }, []);
 
   return (
     <section className="content">
@@ -27,6 +50,14 @@ function Schools() {
       >
         Register School
       </button>
+
+      <div className="school-card-container"> 
+        {
+          schoolList.map((school) => (
+            <SchoolCard school={school}/>
+          ))
+        }
+      </div>
 
       {showForm && (
         <div className="school-modal-overlay">

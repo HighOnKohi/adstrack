@@ -1,41 +1,79 @@
 import "./Schedules.css";
 import { addIcon, bookIcon, closeIcon } from "../../assets/Icons/index.js";
-
+import { useState, useEffect } from "react";
+import { db } from "../../config/fbConf.js";
+import { collection, getDocs } from "firebase/firestore";
 import { useScheduleForm } from "./ScheduleServices.jsx";
+import ScheduleCard from "./Components/Schedule-Card.jsx";
 
 function Directory() {
-  const {
-    showForm,
-    setShowForm,
-    formData,
-    handleChange,
-    handleSubmit,
-    schools,
-  } = useScheduleForm();
+  const { showForm, setShowForm, formData, handleChange, handleSubmit, schools } = useScheduleForm();
+  const [meetings, setMeetings] = useState([]);
+
+  //Get meetings from Firebase
+  useEffect(() => {
+
+    const fetchMeetings = async () => {
+        const querySnapshot = await getDocs(collection(db, "Meetings"));
+        const meetingsList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setMeetings(meetingsList);
+    };
+
+    fetchMeetings();
+  }, []);
+
+  const handleUpdate = () => {
+
+    const fetchMeetings = async () => {
+        const querySnapshot = await getDocs(collection(db, "Meetings"));
+        const meetingsList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setMeetings(meetingsList);
+    };
+
+    fetchMeetings();
+  };
 
   return (
     <div className="content">
       <div>
+
         <div className="Label">
           <h1> Schedule Directory </h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut.
-          </p>
+          <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. </p>
         </div>
 
         <div className="Search-bar">
           <input type="text" placeholder="Search school name" />
-          <button
-            className="schedule-meeting-button"
-            onClick={() => setShowForm(true)}
-          >
+          <button className="schedule-meeting-button" onClick={() => setShowForm(true)}>
             <img src={bookIcon} alt="Book" />
             Schedule Meeting
           </button>
         </div>
+
+        <div className="schedule-list-labels">
+          <div className="schedule-label-cell">NAME</div>
+          <div className="schedule-label-cell">ADDRESS</div>
+          <div className="schedule-label-cell">DATE OF CONTRACT</div>
+          <div className="schedule-label-cell">ETA</div>
+          <div className="schedule-label-cell"></div>
+        </div>
+
+        <div className="schedule-list-container">
+          {meetings.length === 0 ? (
+            <div className="no-schedules">No schedules found</div>
+          ) : (
+            meetings.map((meeting) => (
+              <ScheduleCard
+                key={meeting.id}
+                meeting={meeting}
+                onUpdate={handleUpdate}
+              />
+            ))
+          )}
+        </div>
       </div>
 
+      {/* Schedule Meeting Form Modal */}
       {showForm && (
         <div className="sched-modal-overlay">
           <div className="sched-form">
@@ -139,7 +177,7 @@ function Directory() {
                   type="datetime-local"
                   className="sched-input"
                   value={formData.ETD}
-                  onChange={handleChange}
+                  onChange={handleChange}   
                 />
               </div>
 
