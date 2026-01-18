@@ -73,7 +73,6 @@ function Directory() {
         </div>
       </div>
 
-      {/* Schedule Meeting Form Modal */}
       {showForm && (
         <div className="sched-modal-overlay">
           <div className="sched-form">
