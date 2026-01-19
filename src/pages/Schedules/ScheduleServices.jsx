@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 
 export const useScheduleForm = () => {
   const [showForm, setShowForm] = useState(false);
@@ -46,7 +46,6 @@ export const useScheduleForm = () => {
       !formData.Level ||
       !formData.Companions ||
       !formData.Attendee_Est ||
-      !formData.DoC ||
       !formData.ETA ||
       !formData.ETD
     ) {
@@ -55,8 +54,13 @@ export const useScheduleForm = () => {
     }
     try {
       const timestamp = new Date();
-      await addDoc(collection(db, "Meetings"), {
+      const year = timestamp.getFullYear();
+      const month = String(timestamp.getMonth() + 1).padStart(2, "0");
+      const day = String(timestamp.getDate()).padStart(2, "0");
+      const docID = `${year}-${month}-${day}`;
+      await setDoc(doc(db, "Meetings", docID), {
         ...formData,
+        DoC: docID,
         Notes: formData.Notes || "None",
         Date_Created: timestamp,
         Date_Modified: timestamp,
