@@ -1,0 +1,68 @@
+.print-instructions {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.print-schedules-list {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.print-header-row {
+  background-color: #a71a2b !important;
+  color: white;
+  font-weight: 700;
+  border-radius: 7px;
+  margin-bottom: 0.5rem;
+}
+
+.print-header-row:hover {
+  background-color: #a71a2b !important;
+}
+
+.print-header-row .schedule-card-cell {
+  color: white;
+  font-weight: 700;
+}
+
+.print-checkbox-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.print-checkbox-item {
+  align-items: center;
+}
+
+.print-checkbox-item .schedule-card-cell {
+  cursor: default;
+}
+
+.print-checkbox-cell {
+  width: 50px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.print-checkbox-input {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.print-checkbox-item:hover {
+  background-color: #f5f5f5;
+}
+
+.print-checkbox-item:hover .schedule-card-cell {
+  cursor: default;
+}

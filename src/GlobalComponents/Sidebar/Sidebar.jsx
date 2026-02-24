@@ -44,13 +44,13 @@ export default function Sidebar() {
         >
           <img src={calendarIcon} alt="Calendar" /> Calendar
         </a>
-        <a
+        {/* <a
           onClick={() => {
             nav("/inventory");
           }}
         >
           <img src={inventoryIcon} alt="Inventory" /> Inventory
-        </a>
+        </a> */}
         <a
           onClick={() => {
             nav("/analytics");

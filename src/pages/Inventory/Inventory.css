@@ -14,20 +14,12 @@
 }
 
 .Search-bar input:focus {
-    outline: none;
-    border: none;
-    border-width: 0px;
+    outline: none;        
+    border: none;        
+    border-width: 0px; 
 }
 
-.function-buttons{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 97%;
-    /* gap: 1em; */
-}
-
-.function-buttons button {
+.Search-bar button {
     background-color: #A71A2B;
     color: white;
     font-weight: 400;
@@ -37,9 +29,9 @@
     gap: 0.5rem;
 }
 
-.function-buttons button:focus {
-    outline: none;
-    border: none;
+.Search-bar button:focus {
+    outline: none;        
+    border: none;        
 }
 
 * {
@@ -165,7 +157,7 @@ body {
     display: flex;
     border-radius: 7px;
     margin-top: 20px;
-    background-color: #a71a2b;
+    background-color: #378ce2;
     height: 40px;
     width: 97%;
     align-items: center;
@@ -220,7 +212,7 @@ body {
 }
 
 .edit-details-button {
-    background-color: #a71a2b;
+    background-color: #ff6b35;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -329,13 +321,8 @@ body {
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .loading-spinner p {

@@ -6,3 +6,4 @@ export { default as directoryIcon } from './directory.svg?react';
 export { default as homeIcon } from './home.svg?react';
 export { default as inventoryIcon } from './inventory.svg?react';
 export { default as bookIcon } from './book.svg?react';
+export { default as printIcon } from './print.svg?react';

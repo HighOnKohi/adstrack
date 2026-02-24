@@ -1,33 +1,51 @@
 import "./Schedules.css";
-import { addIcon, bookIcon, closeIcon } from "../../assets/Icons/index.js";
+import {
+  addIcon,
+  bookIcon,
+  closeIcon,
+  printIcon,
+} from "../../assets/Icons/index.js";
 import { useState, useEffect } from "react";
 import { db } from "../../config/fbConf.js";
 import { collection, getDocs } from "firebase/firestore";
 import { useScheduleForm } from "./ScheduleServices.jsx";
 import ScheduleCard from "./Components/Schedule-Card.jsx";
+import PrintCard from "./Components/Print-Card.jsx";
 
-function Directory() {
-  const { showForm, setShowForm, formData, handleChange, handleSubmit, schools } = useScheduleForm();
+function Schedules() {
+  const {
+    showForm,
+    setShowForm,
+    formData,
+    handleChange,
+    handleSubmit,
+    schools,
+  } = useScheduleForm();
   const [meetings, setMeetings] = useState([]);
+  const [showPrintModal, setShowPrintModal] = useState(false);
 
   //Get meetings from Firebase
   useEffect(() => {
-
     const fetchMeetings = async () => {
-        const querySnapshot = await getDocs(collection(db, "Meetings"));
-        const meetingsList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setMeetings(meetingsList);
+      const querySnapshot = await getDocs(collection(db, "Meetings"));
+      const meetingsList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMeetings(meetingsList);
     };
 
     fetchMeetings();
   }, []);
 
   const handleUpdate = () => {
-
     const fetchMeetings = async () => {
-        const querySnapshot = await getDocs(collection(db, "Meetings"));
-        const meetingsList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setMeetings(meetingsList);
+      const querySnapshot = await getDocs(collection(db, "Meetings"));
+      const meetingsList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMeetings(meetingsList);
     };
 
     fetchMeetings();
@@ -36,17 +54,33 @@ function Directory() {
   return (
     <div className="content">
       <div>
-
         <div className="Label">
           <h1> Schedule Directory </h1>
-          <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. </p>
+          <p>
+            {" "}
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut.{" "}
+          </p>
         </div>
 
         <div className="Search-bar">
           <input type="text" placeholder="Search school name" />
-          <button className="schedule-meeting-button" onClick={() => setShowForm(true)}>
+        </div>
+        <div className="function-buttons">
+          <button
+            className="schedule-meeting-button"
+            onClick={() => setShowForm(true)}
+          >
             <img src={bookIcon} alt="Book" />
             Schedule Meeting
+          </button>
+          <button
+            className="schedule-meeting-button"
+            onClick={() => setShowPrintModal(true)}
+            style={{ marginLeft: "10px" }}
+          >
+            <img src={printIcon} alt="Print" />
+            Print
           </button>
         </div>
 
@@ -176,7 +210,7 @@ function Directory() {
                   type="datetime-local"
                   className="sched-input"
                   value={formData.ETD}
-                  onChange={handleChange}   
+                  onChange={handleChange}
                 />
               </div>
 
@@ -200,8 +234,15 @@ function Directory() {
           </div>
         </div>
       )}
+
+      {showPrintModal && (
+        <PrintCard
+          meetings={meetings}
+          onClose={() => setShowPrintModal(false)}
+        />
+      )}
     </div>
   );
 }
 
-export default Directory;
+export default Schedules;
