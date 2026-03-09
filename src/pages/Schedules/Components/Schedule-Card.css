@@ -1,0 +1,64 @@
+.schedule-card-row {
+  cursor: pointer;
+}
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.status-pill.confirmed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-pill.done {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-pill.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.action-buttons-cell {
+  display: flex;
+  gap: 10px;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+}
+
+.action-button.delete {
+  background-color: #dc3545;
+}
+
+.action-icon {
+  width: 14px;
+  margin-right: 8px;
+  filter: brightness(0) invert(1);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.edit-schedule-btn {
+  width: auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-schedule-icon {
+  width: 16px;
+  filter: brightness(0) invert(1);
+}

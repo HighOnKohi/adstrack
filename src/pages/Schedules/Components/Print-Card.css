@@ -1,8 +1,33 @@
-/* Print form – same container as Schedule Meeting (sched-form), print-form scopes layout */
+/* Print form container */
 .print-form {
   width: 60vw;
   max-height: 90vh;
   overflow-y: auto;
+}
+
+/* Header */
+.print-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.print-form .close-modal-button {
+  position: static;
+  margin: 0;
+  filter: brightness(0);
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.print-form h1 {
+  margin: 0;
+  text-align: left;
 }
 
 .print-form-instructions {
@@ -13,30 +38,33 @@
   text-align: left;
 }
 
-/* Red filter row – same grid as data rows; all text white (including ADDRESS) */
+/* ========================= */
+/* TABLE HEADER (RED BAR) */
+/* ========================= */
+
 .print-form-filters {
   display: grid;
-  grid-template-columns: 3rem 1fr 1.2fr 1fr 1.2fr;
+  grid-template-columns: 3rem 1.5fr 1.5fr 1fr 1.5fr 120px;
+  align-items: center;
   gap: 0 1rem;
-  align-items: stretch;
+  padding: 0 1rem;
   background-color: #a71a2b;
   color: white;
   border-radius: 7px;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin: 0.5rem 0;
   min-height: 40px;
   width: 100%;
 }
 
 .print-form-filter-spacer {
   width: 3rem;
-  min-width: 3rem;
 }
 
 .print-form-filter-cell {
-  padding: 0 0.5rem;
   display: flex;
   align-items: center;
+  height: 100%;
+  padding: 0 0.5rem;
   font-weight: 500;
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -48,6 +76,8 @@
   color: white;
 }
 
+/* Schedule label filter button */
+
 .print-form-filter-cell.schedule-label-cell-filter {
   position: relative;
   padding: 0;
@@ -55,9 +85,12 @@
 
 .print-form-filter-cell .schedule-label-filter-btn {
   width: 100%;
-  min-height: 40px;
-  padding-left: 0.5rem;
-  margin-left: 0;
+  min-height: 2em;
+  padding: 0 0 0 0.5rem;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: white;
 }
 
@@ -67,15 +100,24 @@
   color: white;
 }
 
+.print-form-filter-cell .schedule-label-filter-text-group {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
 .print-form-filter-cell .schedule-label-filter-text {
   margin-left: 0;
 }
 
 .print-form-filter-cell .schedule-label-filter-chevron {
-  margin-right: 0.5rem;
+  margin-right: 0;
 }
 
-/* Table section */
+/* ========================= */
+/* TABLE SECTION */
+/* ========================= */
+
 .print-form-table-section {
   width: 100%;
   display: flex;
@@ -86,12 +128,10 @@
 
 .print-form-list-section {
   flex: 1 1 auto;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
   border-radius: 7px;
-  padding: 0;
   overflow: hidden;
   width: 100%;
 }
@@ -105,7 +145,6 @@
 
 .print-form-table-wrap {
   flex: 1 1 auto;
-  min-height: 0;
   overflow: auto;
   max-height: 40vh;
 }
@@ -113,14 +152,18 @@
 .print-form-table {
   display: flex;
   flex-direction: column;
-  min-width: 600px;
+  min-width: 700px;
 }
+
+/* ========================= */
+/* TABLE ROWS */
+/* ========================= */
 
 .print-form-row {
   display: grid;
-  grid-template-columns: 3rem 1fr 1.2fr 1fr 1.2fr;
-  gap: 0 1rem;
+  grid-template-columns: 3rem 1.5fr 1.5fr 1fr 1.5fr 120px;
   align-items: center;
+  gap: 0 1rem;
   padding: 0.6rem 1rem;
   border-bottom: 1px solid #e8e8e8;
   font-size: 0.875rem;
@@ -145,7 +188,6 @@
 .print-form-cell--check {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
 }
 
 .print-form-checkbox {
@@ -155,7 +197,37 @@
   accent-color: #a71a2b;
 }
 
-/* Loading overlay */
+/* ========================= */
+/* STATUS PILLS */
+/* ========================= */
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 3.5em;
+  font-weight: 500;
+  font-size: 0.85em;
+  width: fit-content;
+}
+
+.status-pill.confirmed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-pill.done {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-pill.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* ========================= */
+/* LOADING OVERLAY */
+/* ========================= */
+
 .print-form-loading {
   position: fixed;
   inset: 0;

@@ -65,22 +65,24 @@ function getDateRangeForFilter(value) {
     case "3_weeks_ago": {
       const d = new Date(now);
       d.setDate(d.getDate() - 21);
-      return { start: startOfWeek(d), end: endOfWeek(d) };
+      return { start: startOfWeek(d), end: endOfWeek(now) };
     }
     case "1_month_ago": {
       const d = new Date(now);
+      d.setDate(1);
       d.setMonth(d.getMonth() - 1);
-      return { start: startOfMonth(d), end: endOfMonth(d) };
+      return { start: startOfMonth(d), end: endOfMonth(now) };
     }
     case "3_months_ago": {
       const d = new Date(now);
+      d.setDate(1);
       d.setMonth(d.getMonth() - 3);
-      return { start: startOfMonth(d), end: endOfMonth(d) };
+      return { start: startOfMonth(d), end: endOfMonth(now) };
     }
     case "1_year_ago": {
       const d = new Date(now);
       d.setFullYear(d.getFullYear() - 1);
-      return { start: startOfYear(d), end: endOfYear(d) };
+      return { start: startOfYear(d), end: endOfYear(now) };
     }
     default:
       return null;
@@ -102,6 +104,17 @@ function getDateOfContract(meeting) {
 }
 
 function Schedules() {
+  const [meetings, setMeetings] = useState([]);
+
+  const fetchMeetings = async () => {
+    const querySnapshot = await getDocs(collection(db, "Meetings"));
+    const meetingsList = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setMeetings(meetingsList);
+  };
+
   const {
     showForm,
     setShowForm,
@@ -109,8 +122,8 @@ function Schedules() {
     handleChange,
     handleSubmit,
     schools,
-  } = useScheduleForm();
-  const [meetings, setMeetings] = useState([]);
+  } = useScheduleForm(fetchMeetings);
+
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [selectedSchoolId, setSelectedSchoolId] = useState("");
   const [selectedDateFilter, setSelectedDateFilter] = useState("");
@@ -124,55 +137,76 @@ function Schedules() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (nameFilterRef.current && !nameFilterRef.current.contains(e.target)) setNameDropdownOpen(false);
-      if (dateFilterRef.current && !dateFilterRef.current.contains(e.target)) setDateDropdownOpen(false);
-      if (contractFilterRef.current && !contractFilterRef.current.contains(e.target)) setContractDropdownOpen(false);
+      if (nameFilterRef.current && !nameFilterRef.current.contains(e.target))
+        setNameDropdownOpen(false);
+      if (dateFilterRef.current && !dateFilterRef.current.contains(e.target))
+        setDateDropdownOpen(false);
+      if (
+        contractFilterRef.current &&
+        !contractFilterRef.current.contains(e.target)
+      )
+        setContractDropdownOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
-    const fetchMeetings = async () => {
-      const querySnapshot = await getDocs(collection(db, "Meetings"));
-      const meetingsList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMeetings(meetingsList);
-    };
     fetchMeetings();
   }, []);
 
-  const dateRange = useMemo(() => getDateRangeForFilter(selectedDateFilter), [selectedDateFilter]);
-  const contractRange = useMemo(() => getDateRangeForFilter(selectedContractFilter), [selectedContractFilter]);
+  const dateRange = useMemo(
+    () => getDateRangeForFilter(selectedDateFilter),
+    [selectedDateFilter],
+  );
+  const contractRange = useMemo(
+    () => getDateRangeForFilter(selectedContractFilter),
+    [selectedContractFilter],
+  );
 
   const filteredMeetings = useMemo(() => {
-    return meetings.filter((meeting) => {
-      if (selectedSchoolId && meeting.School_ID !== selectedSchoolId) return false;
+    const filtered = meetings.filter((meeting) => {
+      if (selectedSchoolId && meeting.School_ID !== selectedSchoolId)
+        return false;
       if (selectedDateFilter && dateRange) {
         const d = getMeetingDate(meeting);
         if (!d || d < dateRange.start || d > dateRange.end) return false;
       }
       if (selectedContractFilter && contractRange) {
         const d = getDateOfContract(meeting);
-        if (!d || d < contractRange.start || d > contractRange.end) return false;
+        if (!d || d < contractRange.start || d > contractRange.end)
+          return false;
       }
       return true;
     });
-  }, [meetings, selectedSchoolId, selectedDateFilter, dateRange, selectedContractFilter, contractRange]);
 
-  const handleUpdate = () => {
-    const fetchMeetings = async () => {
-      const querySnapshot = await getDocs(collection(db, "Meetings"));
-      const meetingsList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMeetings(meetingsList);
-    };
-    fetchMeetings();
-  };
+    return filtered.sort((a, b) => {
+      const statusOrder = { Pending: 1, Confirmed: 2, Done: 3 };
+      const statusA = statusOrder[a.Status || "Pending"] || 1;
+      const statusB = statusOrder[b.Status || "Pending"] || 1;
+
+      if (statusA !== statusB) {
+        return statusA - statusB;
+      }
+
+      const dateA = getMeetingDate(a);
+      const dateB = getMeetingDate(b);
+
+      if (dateA && dateB) {
+        return dateA - dateB;
+      }
+      if (dateA) return -1;
+      if (dateB) return 1;
+      return 0;
+    });
+  }, [
+    meetings,
+    selectedSchoolId,
+    selectedDateFilter,
+    dateRange,
+    selectedContractFilter,
+    contractRange,
+  ]);
 
   return (
     <div className="content">
@@ -208,7 +242,10 @@ function Schedules() {
         </div>
 
         <div className="schedule-list-labels">
-          <div className="schedule-label-cell schedule-label-cell-filter" ref={nameFilterRef}>
+          <div
+            className="schedule-label-cell schedule-label-cell-filter"
+            ref={nameFilterRef}
+          >
             <button
               type="button"
               className="schedule-label-filter-btn"
@@ -221,20 +258,60 @@ function Schedules() {
               aria-haspopup="listbox"
             >
               <span className="schedule-label-filter-text">NAME</span>
-              {selectedSchoolId ? <span className="schedule-label-filter-active"> ({schools.find((s) => s.id === selectedSchoolId)?.Name || "Selected"})</span> : null}
-              <span className="schedule-label-filter-chevron" aria-hidden>▼</span>
+              {selectedSchoolId ? (
+                <span className="schedule-label-filter-active">
+                  {" "}
+                  (
+                  {schools.find((s) => s.id === selectedSchoolId)?.Name ||
+                    "Selected"}
+                  )
+                </span>
+              ) : null}
+              <span
+                className="schedule-label-filter-chevron"
+                style={{ paddingLeft: "10px" }}
+                aria-hidden
+              >
+                ▼
+              </span>
             </button>
             {nameDropdownOpen && (
               <div className="schedule-filter-dropdown" role="listbox">
-                <button type="button" className="schedule-filter-option" onClick={() => { setSelectedSchoolId(""); setNameDropdownOpen(false); }} role="option" aria-selected={!selectedSchoolId}>All schools</button>
+                <button
+                  type="button"
+                  className="schedule-filter-option"
+                  onClick={() => {
+                    setSelectedSchoolId("");
+                    setNameDropdownOpen(false);
+                  }}
+                  role="option"
+                  aria-selected={!selectedSchoolId}
+                >
+                  All schools
+                </button>
                 {schools.map((school) => (
-                  <button key={school.id} type="button" className="schedule-filter-option" onClick={() => { setSelectedSchoolId(school.id); setNameDropdownOpen(false); }} role="option" aria-selected={selectedSchoolId === school.id}>{school.Name}</button>
+                  <button
+                    key={school.id}
+                    type="button"
+                    className="schedule-filter-option"
+                    onClick={() => {
+                      setSelectedSchoolId(school.id);
+                      setNameDropdownOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={selectedSchoolId === school.id}
+                  >
+                    {school.Name}
+                  </button>
                 ))}
               </div>
             )}
           </div>
           <div className="schedule-label-cell">ADDRESS</div>
-          <div className="schedule-label-cell schedule-label-cell-filter" ref={contractFilterRef}>
+          <div
+            className="schedule-label-cell schedule-label-cell-filter"
+            ref={contractFilterRef}
+          >
             <button
               type="button"
               className="schedule-label-filter-btn"
@@ -246,20 +323,63 @@ function Schedules() {
               aria-expanded={contractDropdownOpen}
               aria-haspopup="listbox"
             >
-              <span className="schedule-label-filter-text">DATE OF CONTRACT</span>
-              {selectedContractFilter ? <span className="schedule-label-filter-active"> ({DATE_FILTER_OPTIONS.find((o) => o.value === selectedContractFilter)?.label || ""})</span> : null}
-              <span className="schedule-label-filter-chevron" aria-hidden>▼</span>
+              <span className="schedule-label-filter-text">
+                DATE OF CONTRACT
+              </span>
+              {selectedContractFilter ? (
+                <span className="schedule-label-filter-active">
+                  {" "}
+                  (
+                  {DATE_FILTER_OPTIONS.find(
+                    (o) => o.value === selectedContractFilter,
+                  )?.label || ""}
+                  )
+                </span>
+              ) : null}
+              <span
+                className="schedule-label-filter-chevron"
+                style={{ paddingLeft: "10px" }}
+                aria-hidden
+              >
+                ▼
+              </span>
             </button>
             {contractDropdownOpen && (
               <div className="schedule-filter-dropdown" role="listbox">
-                <button type="button" className="schedule-filter-option" onClick={() => { setSelectedContractFilter(""); setContractDropdownOpen(false); }} role="option" aria-selected={!selectedContractFilter}>All Dates</button>
+                <button
+                  type="button"
+                  className="schedule-filter-option"
+                  onClick={() => {
+                    setSelectedContractFilter("");
+                    setContractDropdownOpen(false);
+                  }}
+                  role="option"
+                  aria-selected={!selectedContractFilter}
+                >
+                  All Dates
+                </button>
                 {DATE_FILTER_OPTIONS.map((opt) => (
-                  <button key={opt.value} type="button" className="schedule-filter-option" onClick={() => { setSelectedContractFilter(opt.value); setContractDropdownOpen(false); }} role="option" aria-selected={selectedContractFilter === opt.value}>{opt.label}</button>
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className="schedule-filter-option"
+                    onClick={() => {
+                      setSelectedContractFilter(opt.value);
+                      setContractDropdownOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={selectedContractFilter === opt.value}
+                  >
+                    {opt.label}
+                  </button>
                 ))}
               </div>
             )}
           </div>
-          <div className="schedule-label-cell schedule-label-cell-filter" ref={dateFilterRef}>
+          <div
+            className="schedule-label-cell schedule-label-cell-filter"
+            ref={dateFilterRef}
+          >
             <button
               type="button"
               className="schedule-label-filter-btn"
@@ -271,19 +391,60 @@ function Schedules() {
               aria-expanded={dateDropdownOpen}
               aria-haspopup="listbox"
             >
-              <span className="schedule-label-filter-text">SCHEDULE DATE & TIME</span>
-              {selectedDateFilter ? <span className="schedule-label-filter-active"> ({DATE_FILTER_OPTIONS.find((o) => o.value === selectedDateFilter)?.label || ""})</span> : null}
-              <span className="schedule-label-filter-chevron" aria-hidden>▼</span>
+              <span className="schedule-label-filter-text">
+                SCHEDULE DATE & TIME
+              </span>
+              {selectedDateFilter ? (
+                <span className="schedule-label-filter-active">
+                  {" "}
+                  (
+                  {DATE_FILTER_OPTIONS.find(
+                    (o) => o.value === selectedDateFilter,
+                  )?.label || ""}
+                  )
+                </span>
+              ) : null}
+              <span
+                className="schedule-label-filter-chevron"
+                style={{ paddingLeft: "10px" }}
+                aria-hidden
+              >
+                ▼
+              </span>
             </button>
             {dateDropdownOpen && (
               <div className="schedule-filter-dropdown" role="listbox">
-                <button type="button" className="schedule-filter-option" onClick={() => { setSelectedDateFilter(""); setDateDropdownOpen(false); }} role="option" aria-selected={!selectedDateFilter}>All Dates</button>
+                <button
+                  type="button"
+                  className="schedule-filter-option"
+                  onClick={() => {
+                    setSelectedDateFilter("");
+                    setDateDropdownOpen(false);
+                  }}
+                  role="option"
+                  aria-selected={!selectedDateFilter}
+                >
+                  All Dates
+                </button>
                 {DATE_FILTER_OPTIONS.map((opt) => (
-                  <button key={opt.value} type="button" className="schedule-filter-option" onClick={() => { setSelectedDateFilter(opt.value); setDateDropdownOpen(false); }} role="option" aria-selected={selectedDateFilter === opt.value}>{opt.label}</button>
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className="schedule-filter-option"
+                    onClick={() => {
+                      setSelectedDateFilter(opt.value);
+                      setDateDropdownOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={selectedDateFilter === opt.value}
+                  >
+                    {opt.label}
+                  </button>
                 ))}
               </div>
             )}
           </div>
+          <div className="schedule-label-cell">STATUS</div>
           <div className="schedule-label-cell"></div>
         </div>
 
@@ -295,7 +456,7 @@ function Schedules() {
               <ScheduleCard
                 key={meeting.id}
                 meeting={meeting}
-                onUpdate={handleUpdate}
+                onUpdate={fetchMeetings}
                 schools={schools}
               />
             ))
@@ -352,11 +513,12 @@ function Schedules() {
               </div>
 
               <div className="sched-input-group">
-                <label className="input-label">Companions</label>
+                <label className="input-label">Companion Count</label>
                 <input
                   name="Companions"
                   type="text"
-                  placeholder="Name(s) of Companion(s)"
+                  inputMode="numeric"
+                  placeholder="Companion Count"
                   className="sched-input"
                   value={formData.Companions}
                   onChange={handleChange}
@@ -368,6 +530,7 @@ function Schedules() {
                 <input
                   name="Attendee_Est"
                   type="text"
+                  inputMode="numeric"
                   placeholder="Estimated Number of Attendees"
                   className="sched-input"
                   value={formData.Attendee_Est}
@@ -398,7 +561,9 @@ function Schedules() {
               </div>
 
               <div className="sched-input-group">
-                <label className="input-label">Estimated Time of Departure</label>
+                <label className="input-label">
+                  Estimated Time of Departure
+                </label>
                 <input
                   name="ETD"
                   type="datetime-local"
