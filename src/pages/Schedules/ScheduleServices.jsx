@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, getDocs, setDoc, doc } from "firebase/firestore";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 
 export const useScheduleForm = () => {
   const [showForm, setShowForm] = useState(false);
@@ -10,8 +10,8 @@ export const useScheduleForm = () => {
     Level: "",
     Companions: "",
     Attendee_Est: "",
-    DoC: "",
-    ETA: "",
+    Date_Contract: "",
+    Schedule_Date: "",
     ETD: "",
     Notes: "",
   });
@@ -40,27 +40,42 @@ export const useScheduleForm = () => {
     }));
   };
 
+  const getMeetingScheduleTime = (meeting) => {
+    const raw = meeting.Schedule_Date || meeting.DoC;
+    if (!raw) return null;
+    const d = raw?.toDate ? raw.toDate() : new Date(raw);
+    return isNaN(d.getTime()) ? null : d.getTime();
+  };
+
   const handleSubmit = async () => {
     if (
       !formData.School_ID ||
       !formData.Level ||
       !formData.Companions ||
-      !formData.Attendee_Est ||
-      !formData.ETA ||
-      !formData.ETD
+      !formData.Schedule_Date
     ) {
       alert("Please complete details");
       return;
     }
+    const newTime = new Date(formData.Schedule_Date).getTime();
+    if (isNaN(newTime)) {
+      alert("Please enter a valid schedule date and time.");
+      return;
+    }
     try {
+      const meetingsSnap = await getDocs(collection(db, "Meetings"));
+      const existing = meetingsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const conflict = existing.some((m) => {
+        const t = getMeetingScheduleTime(m);
+        return t !== null && Math.abs(t - newTime) < 60000;
+      });
+      if (conflict) {
+        alert("This date and time is already reserved. Please choose another.");
+        return;
+      }
       const timestamp = new Date();
-      const year = timestamp.getFullYear();
-      const month = String(timestamp.getMonth() + 1).padStart(2, "0");
-      const day = String(timestamp.getDate()).padStart(2, "0");
-      const docID = `${year}-${month}-${day}`;
-      await setDoc(doc(db, "Meetings", docID), {
+      await addDoc(collection(db, "Meetings"), {
         ...formData,
-        DoC: docID,
         Notes: formData.Notes || "None",
         Date_Created: timestamp,
         Date_Modified: timestamp,
@@ -72,8 +87,8 @@ export const useScheduleForm = () => {
         Level: "",
         Companions: "",
         Attendee_Est: "",
-        DoC: "",
-        ETA: "",
+        Date_Contract: "",
+        Schedule_Date: "",
         ETD: "",
         Notes: "",
       });

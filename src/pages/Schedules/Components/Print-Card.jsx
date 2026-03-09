@@ -1,18 +1,144 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { buildPagesHtml } from "./PrintTemplate.js";
 import printTemplateCss from "./PrintTemplate.css?raw";
 import "./Print-Card.css";
+import "../Schedules.css";
 import { db } from "../../../config/fbConf.js";
 import { doc, getDoc } from "firebase/firestore";
 import { closeIcon } from "../../../assets/Icons/index.js";
 
-function PrintCard({ meetings = [], onClose }) {
+const DATE_FILTER_OPTIONS = [
+  { value: "this_week", label: "This week" },
+  { value: "3_weeks_ago", label: "3 Weeks ago" },
+  { value: "1_month_ago", label: "1 Month ago" },
+  { value: "3_months_ago", label: "3 Months ago" },
+  { value: "1_year_ago", label: "1 Year ago" },
+];
+
+function getDateRangeForFilter(value) {
+  if (!value) return null;
+  const now = new Date();
+  const startOfWeek = (d) => {
+    const date = new Date(d);
+    date.setDate(date.getDate() - date.getDay());
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+  const endOfWeek = (d) => {
+    const start = startOfWeek(d);
+    start.setDate(start.getDate() + 6);
+    start.setHours(23, 59, 59, 999);
+    return start;
+  };
+  const startOfMonth = (d) => {
+    const date = new Date(d);
+    date.setDate(1);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+  const endOfMonth = (d) => {
+    const date = new Date(d);
+    date.setMonth(date.getMonth() + 1, 0);
+    date.setHours(23, 59, 59, 999);
+    return date;
+  };
+  const startOfYear = (d) => {
+    const date = new Date(d);
+    date.setMonth(0, 1);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+  const endOfYear = (d) => {
+    const date = new Date(d);
+    date.setMonth(11, 31);
+    date.setHours(23, 59, 59, 999);
+    return date;
+  };
+  switch (value) {
+    case "this_week":
+      return { start: startOfWeek(now), end: endOfWeek(now) };
+    case "3_weeks_ago": {
+      const d = new Date(now);
+      d.setDate(d.getDate() - 21);
+      return { start: startOfWeek(d), end: endOfWeek(d) };
+    }
+    case "1_month_ago": {
+      const d = new Date(now);
+      d.setMonth(d.getMonth() - 1);
+      return { start: startOfMonth(d), end: endOfMonth(d) };
+    }
+    case "3_months_ago": {
+      const d = new Date(now);
+      d.setMonth(d.getMonth() - 3);
+      return { start: startOfMonth(d), end: endOfMonth(d) };
+    }
+    case "1_year_ago": {
+      const d = new Date(now);
+      d.setFullYear(d.getFullYear() - 1);
+      return { start: startOfYear(d), end: endOfYear(d) };
+    }
+    default:
+      return null;
+  }
+}
+
+function getMeetingDate(meeting) {
+  const raw = meeting.Schedule_Date || meeting.DoC;
+  if (!raw) return null;
+  const d = raw?.toDate ? raw.toDate() : new Date(raw);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function getDateOfContract(meeting) {
+  const raw = meeting.Date_Contract || meeting.Date_Created;
+  if (!raw) return null;
+  const d = raw?.toDate ? raw.toDate() : new Date(raw);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function PrintCard({ meetings = [], schools = [], onClose }) {
   const [selectedMeetings, setSelectedMeetings] = useState([]);
   const [schoolData, setSchoolData] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);
   const printRef = useRef();
+  const [selectedSchoolId, setSelectedSchoolId] = useState("");
+  const [selectedDateFilter, setSelectedDateFilter] = useState("");
+  const [selectedContractFilter, setSelectedContractFilter] = useState("");
+  const [nameDropdownOpen, setNameDropdownOpen] = useState(false);
+  const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
+  const [contractDropdownOpen, setContractDropdownOpen] = useState(false);
+  const nameFilterRef = useRef(null);
+  const dateFilterRef = useRef(null);
+  const contractFilterRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (nameFilterRef.current && !nameFilterRef.current.contains(e.target)) setNameDropdownOpen(false);
+      if (dateFilterRef.current && !dateFilterRef.current.contains(e.target)) setDateDropdownOpen(false);
+      if (contractFilterRef.current && !contractFilterRef.current.contains(e.target)) setContractDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const dateRange = useMemo(() => getDateRangeForFilter(selectedDateFilter), [selectedDateFilter]);
+  const contractRange = useMemo(() => getDateRangeForFilter(selectedContractFilter), [selectedContractFilter]);
+  const filteredMeetings = useMemo(() => {
+    return meetings.filter((meeting) => {
+      if (selectedSchoolId && meeting.School_ID !== selectedSchoolId) return false;
+      if (selectedDateFilter && dateRange) {
+        const d = getMeetingDate(meeting);
+        if (!d || d < dateRange.start || d > dateRange.end) return false;
+      }
+      if (selectedContractFilter && contractRange) {
+        const d = getDateOfContract(meeting);
+        if (!d || d < contractRange.start || d > contractRange.end) return false;
+      }
+      return true;
+    });
+  }, [meetings, selectedSchoolId, selectedDateFilter, dateRange, selectedContractFilter, contractRange]);
 
   const fetchSchoolData = async (schoolId) => {
     if (!schoolId) return null;
@@ -102,7 +228,7 @@ function PrintCard({ meetings = [], onClose }) {
 
     setIsGenerating(true);
     try {
-      const selectedData = meetings.filter((m) =>
+      const selectedData = filteredMeetings.filter((m) =>
         selectedMeetings.includes(m.id),
       );
 
@@ -216,87 +342,150 @@ function PrintCard({ meetings = [], onClose }) {
         className="sched-form print-form"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="close-modal-button" onClick={onClose}>
+        <button
+          type="button"
+          className="close-modal-button"
+          onClick={onClose}
+          aria-label="Close"
+        >
           <img src={closeIcon} alt="close" />
         </button>
 
         <h1>Print Schedules</h1>
-        <p className="print-instructions">
-          Select the schedules you want to include in the PDF, then click
-          "Generate PDF".
+        <p className="print-form-instructions">
+          Filter and select schedules, then click &quot;Generate PDF&quot;.
         </p>
 
-        <div className="print-schedules-list">
-          {meetings.length === 0 ? (
-            <div className="no-schedules">No schedules available</div>
-          ) : (
-            <>
-              <div className="schedule-card-row print-header-row">
-                <div className="schedule-card-cell"></div>
-                <div className="schedule-card-cell">School Name</div>
-                <div className="schedule-card-cell">Location</div>
-                <div className="schedule-card-cell">Date</div>
-                <div className="schedule-card-cell">ETA</div>
-              </div>
-              <div className="print-checkbox-container">
-                {meetings.map((meeting) => {
-                  const school = schoolData[meeting.School_ID];
-                  const isSelected = selectedMeetings.includes(meeting.id);
-                  return (
-                    <div
-                      key={meeting.id}
-                      className="schedule-card-row print-checkbox-item"
-                    >
-                      <div
-                        className="schedule-card-cell print-checkbox-cell"
-                        onClick={() =>
-                          handleSelectMeeting(meeting.id, !isSelected)
-                        }
-                      >
-                        <input
-                          type="checkbox"
-                          id={`meeting-${meeting.id}`}
-                          checked={isSelected}
-                          onChange={(e) =>
-                            handleSelectMeeting(meeting.id, e.target.checked)
-                          }
-                          className="print-checkbox-input"
-                        />
-                      </div>
-                      <div className="schedule-card-cell">
-                        {school?.Name || "Loading..."}
-                      </div>
-                      <div className="schedule-card-cell">
-                        {school?.Address || "N/A"}
-                      </div>
-                      <div className="schedule-card-cell">
-                        {formatDate(meeting.DoC)}
-                      </div>
-                      <div className="schedule-card-cell">
-                        {formatDateTime(meeting.ETA)}
-                      </div>
+        <section className="print-form-table-section" aria-label="Schedules to print">
+          <div className="print-form-filters" role="row" aria-label="Filter by column">
+            <div className="print-form-filter-spacer" aria-hidden />
+            <div className="print-form-filter-cell schedule-label-cell-filter" ref={nameFilterRef}>
+                  <button
+                    type="button"
+                    className="schedule-label-filter-btn"
+                    onClick={() => {
+                      setDateDropdownOpen(false);
+                      setContractDropdownOpen(false);
+                      setNameDropdownOpen((o) => !o);
+                    }}
+                    aria-expanded={nameDropdownOpen}
+                    aria-haspopup="listbox"
+                  >
+                    <span className="schedule-label-filter-text">NAME</span>
+                    {selectedSchoolId ? <span className="schedule-label-filter-active"> ({schools.find((s) => s.id === selectedSchoolId)?.Name || "Selected"})</span> : null}
+                    <span className="schedule-label-filter-chevron" aria-hidden>▼</span>
+                  </button>
+                  {nameDropdownOpen && (
+                    <div className="schedule-filter-dropdown" role="listbox">
+                      <button type="button" className="schedule-filter-option" onClick={() => { setSelectedSchoolId(""); setNameDropdownOpen(false); }} role="option" aria-selected={!selectedSchoolId}>All schools</button>
+                      {schools.map((school) => (
+                        <button key={school.id} type="button" className="schedule-filter-option" onClick={() => { setSelectedSchoolId(school.id); setNameDropdownOpen(false); }} role="option" aria-selected={selectedSchoolId === school.id}>{school.Name}</button>
+                      ))}
                     </div>
-                  );
-                })}
+                  )}
+            </div>
+            <div className="print-form-filter-cell print-form-filter-cell--label">ADDRESS</div>
+            <div className="print-form-filter-cell schedule-label-cell-filter" ref={contractFilterRef}>
+              <button
+                type="button"
+                className="schedule-label-filter-btn"
+                onClick={() => {
+                  setNameDropdownOpen(false);
+                  setDateDropdownOpen(false);
+                  setContractDropdownOpen((o) => !o);
+                }}
+                aria-expanded={contractDropdownOpen}
+                aria-haspopup="listbox"
+              >
+                <span className="schedule-label-filter-text">DATE OF CONTRACT</span>
+                {selectedContractFilter ? <span className="schedule-label-filter-active"> ({DATE_FILTER_OPTIONS.find((o) => o.value === selectedContractFilter)?.label || ""})</span> : null}
+                <span className="schedule-label-filter-chevron" aria-hidden>▼</span>
+              </button>
+              {contractDropdownOpen && (
+                <div className="schedule-filter-dropdown" role="listbox">
+                  <button type="button" className="schedule-filter-option" onClick={() => { setSelectedContractFilter(""); setContractDropdownOpen(false); }} role="option" aria-selected={!selectedContractFilter}>All Dates</button>
+                  {DATE_FILTER_OPTIONS.map((opt) => (
+                    <button key={opt.value} type="button" className="schedule-filter-option" onClick={() => { setSelectedContractFilter(opt.value); setContractDropdownOpen(false); }} role="option" aria-selected={selectedContractFilter === opt.value}>{opt.label}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="print-form-filter-cell schedule-label-cell-filter" ref={dateFilterRef}>
+              <button
+                type="button"
+                className="schedule-label-filter-btn"
+                onClick={() => {
+                  setNameDropdownOpen(false);
+                  setContractDropdownOpen(false);
+                  setDateDropdownOpen((o) => !o);
+                }}
+                aria-expanded={dateDropdownOpen}
+                aria-haspopup="listbox"
+              >
+                <span className="schedule-label-filter-text">SCHEDULE DATE & TIME</span>
+                {selectedDateFilter ? <span className="schedule-label-filter-active"> ({DATE_FILTER_OPTIONS.find((o) => o.value === selectedDateFilter)?.label || ""})</span> : null}
+                <span className="schedule-label-filter-chevron" aria-hidden>▼</span>
+              </button>
+              {dateDropdownOpen && (
+                <div className="schedule-filter-dropdown" role="listbox">
+                  <button type="button" className="schedule-filter-option" onClick={() => { setSelectedDateFilter(""); setDateDropdownOpen(false); }} role="option" aria-selected={!selectedDateFilter}>All Dates</button>
+                  {DATE_FILTER_OPTIONS.map((opt) => (
+                    <button key={opt.value} type="button" className="schedule-filter-option" onClick={() => { setSelectedDateFilter(opt.value); setDateDropdownOpen(false); }} role="option" aria-selected={selectedDateFilter === opt.value}>{opt.label}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="print-form-list-section">
+            {filteredMeetings.length === 0 ? (
+              <div className="print-form-empty">No schedules match the current filters.</div>
+            ) : (
+              <div className="print-form-table-wrap">
+                <div className="print-form-table" role="table">
+                  {filteredMeetings.map((meeting) => {
+                    const school = schoolData[meeting.School_ID];
+                    const isSelected = selectedMeetings.includes(meeting.id);
+                    const dateOfContract = meeting.Date_Contract || meeting.Date_Created;
+                    const scheduleDate = meeting.Schedule_Date || meeting.DoC;
+                    return (
+                      <div key={meeting.id} className="print-form-row" role="row">
+                        <div className="print-form-cell print-form-cell--check">
+                          <input
+                            type="checkbox"
+                            id={`meeting-${meeting.id}`}
+                            checked={isSelected}
+                            onChange={(e) => handleSelectMeeting(meeting.id, e.target.checked)}
+                            className="print-form-checkbox"
+                            aria-label={`Select ${school?.Name || meeting.id}`}
+                          />
+                        </div>
+                        <div className="print-form-cell">{school?.Name ?? "—"}</div>
+                        <div className="print-form-cell">{school?.Address ?? "—"}</div>
+                        <div className="print-form-cell">{formatDate(dateOfContract)}</div>
+                        <div className="print-form-cell">{formatDateTime(scheduleDate)}</div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </>
-          )}
-        </div>
+            )}
+          </div>
+        </section>
 
         <button
+          type="button"
           className="sched-submit"
           onClick={generatePDF}
           disabled={isGenerating}
         >
-          {isGenerating ? "Generating PDF..." : "Generate PDF"}
+          {isGenerating ? "Generating PDF…" : "Generate PDF"}
         </button>
       </div>
       {isGenerating && (
-        <div className="loading-overlay">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Generating PDF...</p>
-          </div>
+        <div className="print-form-loading" aria-live="polite">
+          <div className="print-form-spinner" />
+          <p>Generating PDF…</p>
         </div>
       )}
     </div>

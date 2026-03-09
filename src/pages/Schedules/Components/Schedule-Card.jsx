@@ -111,7 +111,6 @@ function ScheduleCard({ meeting, onUpdate }) {
             <div className="sched-form-grid">
               <div className="sched-input-group">
                 <label className="input-label"> Level </label>
-
                 <select
                   name="Level"
                   className="sched-input"

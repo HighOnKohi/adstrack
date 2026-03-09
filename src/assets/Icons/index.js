@@ -7,3 +7,5 @@ export { default as homeIcon } from './home.svg?react';
 export { default as inventoryIcon } from './inventory.svg?react';
 export { default as bookIcon } from './book.svg?react';
 export { default as printIcon } from './print.svg?react';
+export { default as editIcon } from './edit.svg';
+export { default as trashIcon } from './trash.svg';
