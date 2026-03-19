@@ -1,54 +1,71 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../config/fbConf";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import "../config/fbConf.js";
 
 const AuthContext = createContext(null);
+const auth = getAuth();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("adsAuthUser");
-    if (!stored) return null;
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    try {
-      const parsed = JSON.parse(stored);
-      return parsed?.username ? parsed : null;
-    } catch {
-      return null;
-    }
-  });
+  useEffect(() => {
+    // Firebase automatically handles session persistence
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({ id: currentUser.uid, email: currentUser.email });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
 
-  const loading = false;
+    return () => unsubscribe();
+  }, []);
 
   const login = async ({ username, password }) => {
-    const usersRef = collection(db, "Credentials");
-    const q = query(usersRef, where("username", "==", username));
+    try {
+      // Firebase Auth requires an email. If the user just types a username like "admin",
+      // we automatically append a domain so Firebase Auth accepts it.
+      const loginEmail = username.includes("@")
+        ? username
+        : `${username}@adstrack.local`;
 
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      const doc = snapshot.docs[0];
-      const data = doc.data();
-      if (data.password === password) {
-        const userData = { id: doc.id, username: data.username };
-        setUser(userData);
-        localStorage.setItem("adsAuthUser", JSON.stringify(userData));
-        return { ok: true, user: userData };
-      }
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        loginEmail,
+        password,
+      );
+      const userData = {
+        id: userCredential.user.uid,
+        email: userCredential.user.email,
+      };
+      return { ok: true, user: userData };
+    } catch (error) {
+      console.error("Login failed:", error.message);
+      return { ok: false, error: error.message };
     }
-
-    return { ok: false };
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("adsAuthUser");
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout failed:", error.message);
+    }
   };
 
   const value = useMemo(
     () => ({ user, loading, login, logout }),
-    [user, loading]
+    [user, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -22,10 +22,19 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(#a71a2b86, #a71a2b86), url("../../assets/bg_login.png");
+    background: linear-gradient(180deg, rgba(167,26,43,0.75), rgba(0,0,0,0.4)), url("/src/assets/bg_login.png");
     background-size: cover;
     background-position: center;
     z-index: -1;
+}
+
+.main_content {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
 }
 
 
@@ -35,7 +44,7 @@ body {
     display: flex;
     align-items: center;
     flex-direction: column;
-    width: 25vw;
+    width: min(92vw, 420px);
     border-radius: 1em;
     gap: 1em;
     box-shadow:
@@ -50,7 +59,7 @@ body {
     flex-direction: column;
     margin-top: 10%;
     gap: 1em;
-    width: 80%;
+    width: 90%;
 }
 
 .btn {
@@ -107,10 +116,20 @@ body {
 .main_content {
     /* background-color: #ffffff; */
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 1rem;
+}
+
+@media (max-width: 700px) {
+    .banner { display: none; }
+    .login { width: min(96vw, 420px); }
+    .header-login h1 { font-size: 1.8rem; }
+    .credentials input { font-size: 14px; padding: 0.9rem; }
+    .btn { padding: 0.85rem; font-size: 0.9rem; }
+    .tAndC h4 { font-size: 11px; }
 }
 
 .container_vert {

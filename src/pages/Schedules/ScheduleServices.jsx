@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
 
 export const useScheduleForm = (onSuccess) => {
   const [showForm, setShowForm] = useState(false);
@@ -145,11 +145,27 @@ export const useScheduleForm = (onSuccess) => {
     }
 
     try {
-      const meetingsSnap = await getDocs(collection(db, "Meetings"));
+      // Create a 1-hour window before and after the new schedule time
+      const conflictStart = new Date(newTime - 3600000);
+      const conflictEnd = new Date(newTime + 3600000);
+
+      const pad = (n) => String(n).padStart(2, "0");
+      const formatQueryDate = (d) =>
+        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+      // Efficiently query only meetings that fall within this 2-hour window
+      const conflictQuery = query(
+        collection(db, "Meetings"),
+        where("Schedule_Date", ">", formatQueryDate(conflictStart)),
+        where("Schedule_Date", "<", formatQueryDate(conflictEnd)),
+      );
+
+      const meetingsSnap = await getDocs(conflictQuery);
       const existing = meetingsSnap.docs.map((d) => ({
         id: d.id,
         ...d.data(),
       }));
+
       const conflict = existing.some((m) => {
         if (m.Status === "Done") return false;
         const t = getMeetingScheduleTime(m);

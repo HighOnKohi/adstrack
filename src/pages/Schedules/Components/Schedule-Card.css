@@ -1,5 +1,22 @@
 .schedule-card-row {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  padding: 0.6rem;
+}
+
+@media (max-width: 980px) {
+  .schedule-card-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .schedule-card-cell { width: 100%; }
+  .action-buttons-cell { justify-content: flex-start; }
 }
 
 .status-pill {

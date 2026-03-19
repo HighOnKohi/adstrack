@@ -91,9 +91,9 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 1em;
-    padding: 2rem;
+    padding: 1.25rem;
     border-radius: 1rem;
-    width: 60vw;
+    width: min(92vw, 680px);
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -379,9 +379,9 @@ body {
 .sched-details-modal {
     background: #fff;
     border-radius: 1rem;
-    padding: 2rem;
-    max-width: 28rem;
-    width: 90%;
+    padding: 1.25rem;
+    max-width: 92vw;
+    width: min(92vw, 500px);
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
@@ -535,6 +535,36 @@ body {
     100% {
         transform: rotate(360deg);
     }
+}
+
+@media (max-width: 980px) {
+    .function-buttons { flex-wrap: wrap; gap: 0.5rem; }
+    .schedule-list-labels { display: none; }
+    .schedule-list-container { width: 100%; }
+    .schedule-card-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+        padding: 0.8rem;
+    }
+    .schedule-card-cell {
+        flex: none;
+        width: 100%;
+        padding: 0.1rem 0;
+        text-align: left;
+    }
+    .action-buttons-cell { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0.35rem; }
+    .sched-form { width: min(94vw, 600px); }
+    .sched-form-grid { grid-template-columns: 1fr; }
+    .sched-submit { width: fit-content; padding: 0.4rem 1rem; }
+    .schedule-label-filter-btn { font-size: 0.8rem; }
+}
+
+@media (max-width: 700px) {
+    .schedule-card-row { gap: 0.2rem; }
+    .schedule-card-cell { font-size: 0.8rem; }
+    .action-button { font-size: 0.75rem; padding: 0.3rem 0.5rem; }
+    .action-icon { margin-right: 0.2rem; width: 12px; }
 }
 
 .loading-spinner p {

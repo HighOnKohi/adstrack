@@ -56,7 +56,7 @@ body {
     gap: 1em;
     padding: 2rem;
     border-radius: 1rem;
-    width: 60vw;
+    width: min(90vw, 600px);
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -102,6 +102,14 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     width: 100%;
+}
+
+@media (max-width: 700px) {
+    .school-form-grid { grid-template-columns: 1fr; }
+    .school-submit, .register-school-button { width: fit-content; padding: 0.6rem 1rem; }
+    .school-card { width: 100%; max-width: 360px; }
+    .school-card-container { width: 100%; gap: 1rem; }
+    .school-detail-modal { width: min(95vw, 520px); }
 }
 
 .school-input-group {

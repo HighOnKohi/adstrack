@@ -213,7 +213,7 @@ function Calendar() {
       setPopupPosition({ top: rect.top, left: rect.right + 10 });
       setShowDayDetail(true);
       enterTimeoutRef.current = null;
-    }, 3000);
+    }, 300);
   };
 
   const handleDayMouseLeave = () => {
@@ -266,14 +266,7 @@ function Calendar() {
           </button>
         </div>
 
-        <div
-          className="calendar-months-container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "20px",
-          }}
-        >
+        <div className="calendar-months-container">
           {months.map((m) => (
             <MonthGrid
               key={`${m.year}-${m.month}`}
