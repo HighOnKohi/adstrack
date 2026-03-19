@@ -19,4 +19,19 @@
     flex-direction: column;
     text-align: center;
     font-size: 0.8rem;
+    gap: 0.25rem;
+}
+
+.logout {
+    border: none;
+    background: transparent;
+    color: #a71a2b;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.logout:hover {
+    opacity: 0.8;
 }

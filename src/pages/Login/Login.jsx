@@ -1,19 +1,36 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import "./Login.css";
 import logo from "../../assets/sct-logo2.png";
-
-const login = async () => {
-  const nav = useNavigate();
-  return nav("/home");
-};
+import { useAuth } from "../../context/AuthContext.jsx";
 
 function Login() {
-  const nav = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, login } = useAuth();
   const [isInvalid, setIsInvalid] = useState(false);
-  const [accID, setAccID] = useState("");
-  const [pin, setPin] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const from = location.state?.from?.pathname || "/home";
+
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, from, navigate]);
+
+  const handleLogin = async () => {
+    setIsInvalid(false);
+
+    const result = await login({ username, password });
+    if (result.ok) {
+      navigate(from, { replace: true });
+    } else {
+      setIsInvalid(true);
+    }
+  };
 
   return (
     <>
@@ -28,26 +45,20 @@ function Login() {
             <input
               type="text"
               placeholder="Username"
-              value={accID}
+              value={username}
               onChange={(e) => {
-                setAccID(e.target.value);
+                setUsername(e.target.value);
               }}
             />
             <input
               type="password"
               placeholder="Password"
-              value={pin}
+              value={password}
               onChange={(e) => {
-                setPin(e.target.value);
+                setPassword(e.target.value);
               }}
             />
-            <button
-              className="btn"
-              onClick={() => {
-                nav("/home");
-                login();
-              }}
-            >
+            <button className="btn" onClick={handleLogin}>
               LOGIN
             </button>
             <div className="tAndC">

@@ -14,12 +14,21 @@ import Schools from "./pages/Schools/Schools.jsx";
 //Global imports
 import Layout from "./GlobalComponents/Layout.jsx";
 
+// Auth
+import { RequireAuth } from "./context/AuthContext.jsx";
+
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
 
-      <Route element={<Layout />}>
+      <Route
+        element={
+          <RequireAuth>
+            <Layout />
+          </RequireAuth>
+        }
+      >
         <Route path="/home" element={<Homepage />} />
         <Route path="/schedules" element={<Schedules />} />
         <Route path="/calendar" element={<Calendar />} />
