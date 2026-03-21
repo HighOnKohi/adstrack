@@ -232,6 +232,40 @@ function Inventory() {
         <div className="inventory-error-message">{errorMessage}</div>
       )}
 
+      <div className="inventory-filters">
+        <div className="inventory-filter-field">
+          <label htmlFor="mobile-category-filter">Category</label>
+          <select
+            id="mobile-category-filter"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">All categories</option>
+            {uniqueCategories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="inventory-filter-field">
+          <label htmlFor="mobile-stock-filter">Stock</label>
+          <select
+            id="mobile-stock-filter"
+            value={selectedStock}
+            onChange={(e) => setSelectedStock(e.target.value)}
+          >
+            <option value="">All stocks</option>
+            {uniqueStocks.map((stock) => (
+              <option key={stock} value={stock}>
+                {stock}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="inventory-table">
         <div className="inventory-table-header">
           <div>ID</div>

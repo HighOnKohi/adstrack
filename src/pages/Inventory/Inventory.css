@@ -182,6 +182,35 @@
   gap: 0.35rem;
 }
 
+.inventory-filters {
+  display: none;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  align-items: flex-end;
+}
+
+.inventory-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 160px;
+}
+
+.inventory-filter-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.inventory-filter-field select {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
 .inventory-action-btn img,
 .inventory-add-button img,
 .inventory-modal-close img,
@@ -359,20 +388,24 @@ h6 {
   font-family: "DM Serif Display", serif;
 }
 
-@media (max-width: 980px) {
+@media (max-width: 980px) {  .inventory-filters {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .inventory-filter-field {
+    min-width: 160px;
+  }
   .inventory-table-header,
   .inventory-row {
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
     min-width: 0;
   }
 
   .inventory-table-header > div:nth-child(3),
-  .inventory-table-header > div:nth-child(4),
-  .inventory-table-header > div:nth-child(5),
-  .inventory-row > div:nth-child(3),
-  .inventory-row > div:nth-child(4),
-  .inventory-row > div:nth-child(5) {
-    display: none;
+  .inventory-row > div:nth-child(3) {
+    display: none; /* hide category */
   }
 
   .inventory-row-actions {
@@ -401,13 +434,12 @@ h6 {
 
   .inventory-table-header,
   .inventory-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1.5fr 1fr 1fr;
   }
 
-  .inventory-row > div:nth-child(3),
-  .inventory-row > div:nth-child(4),
-  .inventory-row > div:nth-child(5) {
-    display: none;
+  .inventory-table-header > div:nth-child(3),
+  .inventory-row > div:nth-child(3) {
+    display: none; /* hide category */
   }
 
   .inventory-row-actions {
