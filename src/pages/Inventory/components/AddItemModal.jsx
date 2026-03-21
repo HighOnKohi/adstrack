@@ -1,0 +1,133 @@
+﻿import { useState, useEffect } from "react";
+import { addIcon, closeIcon } from "../../../assets/Icons/index.js";
+
+function AddItemModal({
+  onClose,
+  onSubmit,
+  loading,
+  initialData = { id: "", name: "", category: "", quantity: "" },
+  title = "Add Inventory Item",
+  submitLabel = "Add Item",
+}) {
+  const [form, setForm] = useState(initialData);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setForm(initialData);
+  }, [initialData]);
+
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setError("");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const name = (form.name || "").trim();
+    const category = (form.category || "").trim();
+
+    if (!name || !category) {
+      setError("Name and category are required.");
+      return;
+    }
+
+    const quantityValue =
+      form.quantity === "" ||
+      form.quantity === null ||
+      form.quantity === undefined
+        ? 0
+        : Number(form.quantity);
+
+    if (Number.isNaN(quantityValue) || quantityValue < 0) {
+      setError("Quantity must be a non-negative number.");
+      return;
+    }
+
+    const idValue = (form.id || "").trim();
+
+    onSubmit({
+      id: idValue,
+      name,
+      category,
+      quantity: quantityValue,
+    });
+  };
+
+  return (
+    <div className="inventory-modal-overlay">
+      <div
+        className="inventory-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="inventory-modal-title"
+      >
+        <button
+          className="inventory-modal-close"
+          type="button"
+          onClick={onClose}
+        >
+          <img src={closeIcon} alt="Close" />
+        </button>
+        <h1 id="inventory-modal-title">{title}</h1>
+
+        <form className="inventory-modal-form" onSubmit={handleSubmit}>
+          <label>
+            Item ID
+            <input
+              type="text"
+              value={form.id}
+              onChange={(e) => handleChange("id", e.target.value)}
+              placeholder="Optional item code"
+            />
+          </label>
+
+          <label>
+            Item name
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              placeholder="Enter item name"
+              required
+            />
+          </label>
+
+          <label>
+            Category
+            <input
+              type="text"
+              value={form.category}
+              onChange={(e) => handleChange("category", e.target.value)}
+              placeholder="Enter category"
+              required
+            />
+          </label>
+
+          <label>
+            Quantity
+            <input
+              type="number"
+              min="0"
+              value={form.quantity}
+              onChange={(e) => handleChange("quantity", e.target.value)}
+              placeholder="0"
+            />
+          </label>
+
+          {error && <div className="inventory-error-message">{error}</div>}
+
+          <button
+            className="inventory-modal-submit"
+            type="submit"
+            disabled={loading}
+          >
+            <img src={addIcon} alt="Add" />
+            {loading ? "Saving..." : submitLabel}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default AddItemModal;
