@@ -1,3 +1,10 @@
+.calendar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
 .calendar-wrap {
   width: 100%;
   margin-top: 1rem;

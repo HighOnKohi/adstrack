@@ -112,6 +112,8 @@
     .brand-sub { display: none; }
     .user-details { align-items: flex-start; text-align: left; }
     .header-right { gap: 0.5rem; }
+    .username { max-width: 80px; }
+    .role { max-width: 80px; }
 }
 
 @media (max-width: 640px) {

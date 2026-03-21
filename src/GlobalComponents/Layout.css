@@ -12,6 +12,8 @@
     flex-direction: column;
     flex: 1;
     background: #f1f3f4;
+    min-height: 100vh;
+    overflow-y: auto;
 }
 
 @media (max-width: 860px) {

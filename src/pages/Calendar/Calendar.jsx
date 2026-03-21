@@ -240,7 +240,7 @@ function Calendar() {
   }, [selectedDate, meetingsByDay]);
 
   return (
-    <div className="content">
+    <div className="calendar-content">
       <div className="Label">
         <h1>Calendar</h1>
         <p>Click a day to see its scheduled meetings.</p>

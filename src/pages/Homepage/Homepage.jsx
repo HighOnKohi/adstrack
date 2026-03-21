@@ -4,7 +4,7 @@ import "./Homepage.css";
 
 export default function Homepage() {
   return (
-    <section className="content">
+    <section className="homepage-content">
       <div>
         <div className="Label">
           <h1> Homepage </h1>

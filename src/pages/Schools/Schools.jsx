@@ -14,7 +14,7 @@ function Schools() {
   const { showForm, setShowForm, formData, handleChange, handleSubmit } =
     useSchoolForm();
 
-  const[schoolList, setSchoolList] = useState([]);
+  const [schoolList, setSchoolList] = useState([]);
 
   useEffect(() => {
     const fetchSchools = async () => {
@@ -24,17 +24,17 @@ function Schools() {
       const list = [];
 
       query.forEach((doc) => {
-        list.push({id: doc.id, data: doc.data()})
-      })
+        list.push({ id: doc.id, data: doc.data() });
+      });
 
       setSchoolList(list);
-    }
+    };
 
     fetchSchools();
   }, []);
 
   return (
-    <section className="content">
+    <section className="schools-content">
       <div>
         <div className="Label">
           <h1> School Directory </h1>
@@ -51,12 +51,10 @@ function Schools() {
         Register School
       </button>
 
-      <div className="school-card-container"> 
-        {
-          schoolList.map((school) => (
-            <SchoolCard school={school}/>
-          ))
-        }
+      <div className="school-card-container">
+        {schoolList.map((school) => (
+          <SchoolCard school={school} />
+        ))}
       </div>
 
       {showForm && (

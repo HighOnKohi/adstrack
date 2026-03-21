@@ -61,7 +61,7 @@ body {
     margin: 0;
 }
 
-.content {
+.schedules-content {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 130px);
@@ -70,7 +70,7 @@ body {
     padding-bottom: 0.5rem;
 }
 
-.content > div {
+.schedules-content > div {
     display: flex;
     flex-direction: column;
     min-height: 0;

@@ -209,7 +209,7 @@ function Schedules() {
   ]);
 
   return (
-    <div className="content">
+    <div className="schedules-content">
       <div>
         <div className="Label">
           <h1> Schedule Directory </h1>

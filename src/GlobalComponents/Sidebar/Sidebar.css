@@ -2,8 +2,11 @@
     width: 15rem;
     background: #a71a2b;
     padding: 2rem 1rem;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
     height: 100vh;
-    position: relative;
+    overflow-y: auto;
     z-index: 30;
     transition: left 0.25s ease;
 }

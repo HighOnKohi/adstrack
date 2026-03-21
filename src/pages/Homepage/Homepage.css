@@ -12,7 +12,7 @@ body {
     margin: 0;
 }
 
-.content {
+.homepage-content {
     padding: 2rem;
 }
 
@@ -33,7 +33,7 @@ body {
 }
 
 @media (max-width: 700px) {
-    .content { padding: 1rem; }
+    .homepage-content { padding: 1rem; }
     .card-grid { grid-template-columns: 1fr; gap: 1rem; }
     .card-body { padding: 1.5rem 0.8rem; }
 }
