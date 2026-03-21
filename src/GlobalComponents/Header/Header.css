@@ -26,6 +26,9 @@
     height: 2rem;
     border-radius: 6px;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     display: none;
 }
@@ -70,10 +73,28 @@
     flex-direction: column;
     align-items: flex-end;
     text-align: right;
+    min-width: 0;
 }
 
-.username { font-weight: 700; color: #1b1b1b; }
-.role { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.03em; }
+.username {
+    font-weight: 700;
+    color: #1b1b1b;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.role {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .logout {
     border: 1px solid #a71a2b;
@@ -92,3 +113,11 @@
     .user-details { align-items: flex-start; text-align: left; }
     .header-right { gap: 0.5rem; }
 }
+
+@media (max-width: 640px) {
+    .username { display: none; }
+    .role { font-size: 0.65rem; }
+    .header-date { font-size: 0.8rem; }
+    .header { padding: 0.5rem 0.7rem; }
+}
+

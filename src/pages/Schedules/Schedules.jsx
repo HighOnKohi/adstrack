@@ -220,9 +220,9 @@ function Schedules() {
           </p>
         </div>
 
-        <div className="Search-bar">
+        {/* <div className="Search-bar">
           <input type="text" placeholder="Search school name" />
-        </div>
+        </div> */}
         <div className="function-buttons">
           <button
             className="schedule-meeting-button"

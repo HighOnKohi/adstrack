@@ -64,6 +64,27 @@ body {
 .content {
     display: flex;
     flex-direction: column;
+    height: calc(100vh - 130px);
+    max-height: calc(100vh - 130px);
+    overflow: hidden;
+    padding-bottom: 0.5rem;
+}
+
+.content > div {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+}
+
+.schedule-list-container {
+    width: 97%;
+    margin-top: 0.5rem;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .subtitle {

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/sct-logo2.png";
+import logo from "../../assets/templogo.png";
 import "./Header.css";
 import { useAuth } from "../../context/AuthContext.jsx";
 
@@ -22,14 +22,18 @@ export default function Header({ onMenuClick }) {
   return (
     <header className="header">
       <div className="header-left">
-        <button className="menu-button" onClick={onMenuClick} aria-label="Open menu">
+        <button
+          className="menu-button"
+          onClick={onMenuClick}
+          aria-label="Open menu"
+        >
           ☰
         </button>
         <div className="brand">
           <img src={logo} alt="SCT Logo" />
           <div>
-            <div className="brand-name">ADS Track</div>
-            <div className="brand-sub">School Client Tracking</div>
+            <div className="brand-name">ADSTrack</div>
+            <div className="brand-sub">Admissions Tracking Client</div>
           </div>
         </div>
       </div>
@@ -39,7 +43,9 @@ export default function Header({ onMenuClick }) {
       </div>
       <div className="header-right">
         <div className="user-details">
-          <span className="username">{user?.username ?? "Guest"}</span>
+          <span className="username">
+            {user?.username || user?.email || "Guest"}
+          </span>
           <span className="role">ADMINISTRATOR</span>
         </div>
         <button className="logout" onClick={handleLogout}>
