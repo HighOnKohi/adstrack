@@ -104,7 +104,6 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
   const [selectedMeetings, setSelectedMeetings] = useState([]);
   const [schoolData, setSchoolData] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);
-  const printRef = useRef();
   const [selectedSchoolId, setSelectedSchoolId] = useState("");
   const [selectedDateFilter, setSelectedDateFilter] = useState("");
   const [selectedContractFilter, setSelectedContractFilter] = useState("");
@@ -290,8 +289,9 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
         const styleEl = document.createElement("style");
         styleEl.innerHTML = printTemplateCss;
         tempContainer.appendChild(styleEl);
-      } catch (e) {
+      } catch (err) {
         // non-fatal
+        console.warn("Print template CSS injection failed", err);
       }
 
       // Build pages using external template module

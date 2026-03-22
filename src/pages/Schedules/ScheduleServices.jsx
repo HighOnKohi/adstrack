@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  query,
+  where,
+  onSnapshot,
+} from "firebase/firestore";
 
 export const useScheduleForm = (onSuccess) => {
   const [showForm, setShowForm] = useState(false);
@@ -39,19 +46,21 @@ export const useScheduleForm = (onSuccess) => {
   const [formData, setFormData] = useState(getDefaultFormData());
 
   useEffect(() => {
-    const fetchSchools = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "Schools"));
+    const unsubscribe = onSnapshot(
+      collection(db, "Schools"),
+      (querySnapshot) => {
         const schoolsList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           Name: doc.data().Name,
         }));
         setSchools(schoolsList);
-      } catch (e) {
-        console.error("Error fetching schools: ", e);
-      }
-    };
-    fetchSchools();
+      },
+      (error) => {
+        console.error("Schools realtime update failed:", error);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   const handleChange = (e) => {

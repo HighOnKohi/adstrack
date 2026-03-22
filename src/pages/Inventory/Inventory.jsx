@@ -11,11 +11,13 @@ import {
   STOCK_PRIORITY,
   getNextId,
   checkIdConflict,
+  watchInventoryItems,
 } from "./InventoryServices.jsx";
 import "./Inventory.css";
 
 function Inventory() {
   const [items, setItems] = useState([]);
+  const [connectionStatus, setConnectionStatus] = useState("connecting");
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStock, setSelectedStock] = useState("");
@@ -43,7 +45,18 @@ function Inventory() {
   };
 
   useEffect(() => {
-    loadInventory();
+    const unsubscribe = watchInventoryItems(
+      (items) => {
+        setItems(items);
+        setConnectionStatus("online");
+      },
+      (error) => {
+        console.error("Inventory realtime update failed:", error);
+        setConnectionStatus("offline");
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -199,6 +212,31 @@ function Inventory() {
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </p>
+        <div className="realtime-status">
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "0.85rem",
+              color: connectionStatus === "online" ? "#0f9d58" : "#d93025",
+            }}
+          >
+            <span
+              style={{
+                width: "10px",
+                height: "10px",
+                borderRadius: "50%",
+                background:
+                  connectionStatus === "online" ? "#0f9d58" : "#d93025",
+                display: "inline-block",
+              }}
+            />
+            {connectionStatus === "online"
+              ? "Live updates active"
+              : "Live updates offline"}
+          </span>
+        </div>
       </div>
 
       <div className="inventory-top-row">
@@ -278,7 +316,7 @@ function Inventory() {
               type="button"
               className="inventory-label-filter-btn"
               onClick={() => {
-                setStatusDropdownOpen(false);
+                setStockDropdownOpen(false);
                 setCategoryDropdownOpen((o) => !o);
               }}
               aria-expanded={categoryDropdownOpen}

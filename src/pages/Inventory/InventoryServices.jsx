@@ -6,6 +6,9 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  onSnapshot,
+  query,
+  orderBy,
 } from "firebase/firestore";
 
 const INVENTORY_COLLECTION = "Inventory";
@@ -83,6 +86,33 @@ export async function fetchInventoryItems() {
     ...docSnap.data(),
     status: computeStatus(docSnap.data()?.quantity),
   }));
+}
+
+export function watchInventoryItems(onUpdate, onError) {
+  if (typeof onUpdate !== "function") {
+    throw new Error("watchInventoryItems requires onUpdate callback");
+  }
+
+  const inventoryQuery = query(
+    collection(db, INVENTORY_COLLECTION),
+    orderBy("name", "asc"),
+  );
+
+  return onSnapshot(
+    inventoryQuery,
+    (snapshot) => {
+      const items = snapshot.docs.map((docSnap) => ({
+        docId: docSnap.id,
+        ...docSnap.data(),
+        status: computeStatus(docSnap.data()?.quantity),
+      }));
+      onUpdate(items);
+    },
+    (error) => {
+      if (onError) onError(error);
+      console.error("Inventory realtime update failed:", error);
+    },
+  );
 }
 
 export async function addInventoryItem(itemData) {

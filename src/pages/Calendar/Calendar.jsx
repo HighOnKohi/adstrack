@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { closeIcon } from "../../assets/Icons/index.js";
 import "./Calendar.css";
 

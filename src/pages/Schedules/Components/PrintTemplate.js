@@ -105,7 +105,8 @@ function formatDateSafe(dateInput) {
     if (dateInput && typeof dateInput === 'object' && 'toDate' in dateInput) return dateInput.toDate().toLocaleDateString('en-US', { year:'numeric', month: '2-digit', day: '2-digit'});
     if (typeof dateInput === 'string') return new Date(dateInput).toLocaleDateString('en-US', { year:'numeric', month: '2-digit', day: '2-digit'});
     if (dateInput instanceof Date) return dateInput.toLocaleDateString('en-US', { year:'numeric', month: '2-digit', day: '2-digit'});
-  } catch (e) {
+  } catch (err) {
+    console.warn('formatDateSafe parse error', err);
     return 'N/A';
   }
   return 'N/A';
@@ -117,7 +118,8 @@ function formatDateTimeSafe(dateInput) {
     if (dateInput && typeof dateInput === 'object' && 'toDate' in dateInput) return dateInput.toDate().toLocaleString('en-US', { year:'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'});
     if (typeof dateInput === 'string') return new Date(dateInput).toLocaleString('en-US', { year:'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'});
     if (dateInput instanceof Date) return dateInput.toLocaleString('en-US', { year:'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'});
-  } catch (e) {
+  } catch (err) {
+    console.warn('formatDateTimeSafe parse error', err);
     return 'N/A';
   }
   return 'N/A';

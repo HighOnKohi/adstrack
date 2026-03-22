@@ -20,7 +20,18 @@ function InventoryDirectory() {
   };
 
   useEffect(() => {
-    loadInventory();
+    let isMounted = true;
+
+    const load = async () => {
+      const inventory = await fetchInventoryItems();
+      if (isMounted) setItems(inventory);
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filteredItems = useMemo(() => {

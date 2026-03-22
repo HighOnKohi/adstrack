@@ -7,7 +7,7 @@ import {
 } from "../../assets/Icons/index.js";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { useScheduleForm } from "./ScheduleServices.jsx";
 import ScheduleCard from "./Components/Schedule-Card.jsx";
 import PrintCard from "./Components/Print-Card.jsx";
@@ -105,15 +105,9 @@ function getDateOfContract(meeting) {
 
 function Schedules() {
   const [meetings, setMeetings] = useState([]);
-
-  const fetchMeetings = async () => {
-    const querySnapshot = await getDocs(collection(db, "Meetings"));
-    const meetingsList = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setMeetings(meetingsList);
-  };
+  const [connectionStatus, setConnectionStatus] = useState("connecting");
+  const [statusMessage, setStatusMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     showForm,
@@ -122,7 +116,7 @@ function Schedules() {
     handleChange,
     handleSubmit,
     schools,
-  } = useScheduleForm(fetchMeetings);
+  } = useScheduleForm();
 
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [selectedSchoolId, setSelectedSchoolId] = useState("");
@@ -152,7 +146,32 @@ function Schedules() {
   }, []);
 
   useEffect(() => {
-    fetchMeetings();
+    const meetingsQuery = query(
+      collection(db, "Meetings"),
+      orderBy("Date_Created", "desc"),
+    );
+
+    const unsubscribe = onSnapshot(
+      meetingsQuery,
+      (querySnapshot) => {
+        const meetingsList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setMeetings(meetingsList);
+        setStatusMessage("Schedules updated");
+        setErrorMessage("");
+        setConnectionStatus("online");
+      },
+      (error) => {
+        console.error("Schedules realtime update failed:", error);
+        setErrorMessage("Could not connect to realtime updates");
+        setStatusMessage("");
+        setConnectionStatus("offline");
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   const dateRange = useMemo(
@@ -218,6 +237,35 @@ function Schedules() {
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut.{" "}
           </p>
+          <div className="realtime-status">
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "0.85rem",
+                color: connectionStatus === "online" ? "#0f9d58" : "#d93025",
+              }}
+            >
+              <span
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "50%",
+                  background:
+                    connectionStatus === "online" ? "#0f9d58" : "#d93025",
+                  display: "inline-block",
+                }}
+              />
+              {connectionStatus === "online"
+                ? "Live updates active"
+                : "Live updates offline"}
+            </span>
+          </div>
+          {statusMessage && (
+            <div className="success-message">{statusMessage}</div>
+          )}
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>
 
         {/* <div className="Search-bar">
@@ -456,7 +504,7 @@ function Schedules() {
               <ScheduleCard
                 key={meeting.id}
                 meeting={meeting}
-                onUpdate={fetchMeetings}
+                onUpdate={() => {}}
                 schools={schools}
               />
             ))
