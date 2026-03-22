@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./Inventory.css";
 import InventoryTable from "./components/InventoryTable.jsx";
 import AddItemModal from "./components/AddItemModal.jsx";
+import { useAlert } from "../../GlobalComponents/useAlert.js";
 import {
   fetchInventoryItems,
   addInventoryItem,
@@ -10,6 +11,7 @@ import {
 } from "./InventoryServices.jsx";
 
 function InventoryDirectory() {
+  const { showAlert, showConfirmation } = useAlert();
   const [items, setItems] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -43,19 +45,44 @@ function InventoryDirectory() {
   }, [items, searchText]);
 
   const handleAddItem = async (item) => {
-    await addInventoryItem(item);
-    setIsAddModalOpen(false);
-    await loadInventory();
+    try {
+      await addInventoryItem(item);
+      setIsAddModalOpen(false);
+      await loadInventory();
+      showAlert("Inventory item added successfully.", "Success", "success");
+    } catch (error) {
+      console.error("Failed to add item:", error);
+      showAlert("Failed to add item. Please try again.", "Error", "error");
+    }
   };
 
   const handleUpdateItem = async (docId, updates) => {
-    await updateInventoryItem(docId, updates);
-    await loadInventory();
+    try {
+      await updateInventoryItem(docId, updates);
+      await loadInventory();
+      showAlert("Inventory item updated successfully.", "Success", "success");
+    } catch (error) {
+      console.error("Failed to update item:", error);
+      showAlert("Failed to update item. Please try again.", "Error", "error");
+    }
   };
 
-  const handleDeleteItem = async (docId) => {
-    await deleteInventoryItem(docId);
-    await loadInventory();
+  const handleDeleteItem = async (item) => {
+    showConfirmation(
+      `Are you sure you want to delete "${item.name || item.id || "this item"}"? This action cannot be undone.`,
+      "Confirm Delete",
+      async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await deleteInventoryItem(item.docId || item.id);
+          await loadInventory();
+          showAlert("Inventory item deleted successfully.", "Success", "success");
+        } catch (error) {
+          console.error("Delete inventory failed:", error);
+          showAlert("Failed to delete item. Please try again.", "Error", "error");
+        }
+      },
+    );
   };
 
   return (

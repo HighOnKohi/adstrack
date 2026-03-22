@@ -29,8 +29,6 @@ function Inventory() {
   const [modalMode, setModalMode] = useState("add");
   const [editItem, setEditItem] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const categoryFilterRef = useRef(null);
   const stockFilterRef = useRef(null);
@@ -139,8 +137,6 @@ function Inventory() {
 
   const handleModalSubmit = async (payload) => {
     setIsSaving(true);
-    setStatusMessage("");
-    setErrorMessage("");
 
     // Check for ID conflicts
     const idExists = checkIdConflict(
@@ -151,7 +147,7 @@ function Inventory() {
     );
 
     if (idExists) {
-      setErrorMessage("This ID already exists. Please use a different ID.");
+      showAlert("This ID already exists. Please use a different ID.", "Error", "error");
       setIsSaving(false);
       return;
     }
@@ -159,17 +155,17 @@ function Inventory() {
     try {
       if (modalMode === "add") {
         await addInventoryItem(payload);
-        setStatusMessage("Inventory item added successfully.");
+        showAlert("Inventory item added successfully.", "Success", "success");
       } else {
         await updateInventoryItem(editItem.docId, payload);
-        setStatusMessage("Inventory item updated successfully.");
+        showAlert("Inventory item updated successfully.", "Success", "success");
       }
 
       await loadInventory();
       closeModal();
     } catch (error) {
       console.error("Inventory change failed:", error);
-      setErrorMessage("Failed to save item. Please try again.");
+      showAlert("Failed to save item. Please try again.", "Error", "error");
     } finally {
       setIsSaving(false);
     }
@@ -177,7 +173,6 @@ function Inventory() {
 
   const handleDeleteItem = async (docId) => {
     setIsSaving(true);
-    setErrorMessage("");
 
     try {
       await deleteInventoryItem(docId);
@@ -259,13 +254,6 @@ function Inventory() {
           </button>
         </div>
       </div>
-
-      {statusMessage && (
-        <div className="inventory-status-message">{statusMessage}</div>
-      )}
-      {errorMessage && (
-        <div className="inventory-error-message">{errorMessage}</div>
-      )}
 
       <div className="inventory-filters">
         <div className="inventory-filter-field">
