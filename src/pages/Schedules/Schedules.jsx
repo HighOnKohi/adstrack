@@ -271,9 +271,7 @@ function Schedules() {
                 : "Live updates offline"}
             </span>
           </div>
-          {statusMessage && (
-            <div className="success-message">{statusMessage}</div>
-          )}
+
           {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>
 
@@ -513,7 +511,7 @@ function Schedules() {
               <ScheduleCard
                 key={meeting.id}
                 meeting={meeting}
-                onUpdate={() => {}}
+                onUpdate={() => { }}
                 schools={schools}
               />
             ))

@@ -214,6 +214,18 @@ button:focus-visible {
   transform: translateY(-1px);
 }
 
+.alert-modal-confirm:focus,
+.alert-modal-confirm:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(167, 26, 43, 0.35);
+}
+
+.alert-modal-cancel:focus,
+.alert-modal-cancel:focus-visible {
+  outline: none;
+  background-color: #c8c8c8;
+}
+
 @media (max-width: 640px) {
   .alert-modal-content {
     width: min(95vw, 90%);

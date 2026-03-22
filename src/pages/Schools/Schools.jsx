@@ -11,6 +11,7 @@ import {
   useSchoolForm,
   updateSchool,
   deleteSchool,
+  updateSchoolEnrollment,
 } from "./SchoolsServices.jsx";
 
 function Schools() {
@@ -28,6 +29,7 @@ function Schools() {
   const [connectionStatus, setConnectionStatus] = useState("connecting");
   const [editMode, setEditMode] = useState(false);
   const [editingSchool, setEditingSchool] = useState(null);
+  const [showStats, setShowStats] = useState(false);
 
 
   const resetForm = () => {
@@ -169,21 +171,26 @@ function Schools() {
                 : "Live updates offline"}
             </span>
           </div>
-          {statusMessage && (
-            <div className="success-message">{statusMessage}</div>
-          )}
           {errorMessage && <div className="error-message">{errorMessage}</div>}
         </div>
       </div>
-      <button
-        className="register-school-button"
-        onClick={() => {
-          resetForm();
-          setShowForm(true);
-        }}
-      >
-        Register School
-      </button>
+      <div className="school-buttons-row">
+        <button
+          className="register-school-button"
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
+        >
+          Register School
+        </button>
+        <button
+          className={`manage-stats-button ${showStats ? "active" : ""}`}
+          onClick={() => setShowStats((v) => !v)}
+        >
+          {showStats ? "View Schools" : "Manage Statistics"}
+        </button>
+      </div>
 
       <div className="school-card-container">
         {schoolList.map((school) => (
@@ -192,6 +199,16 @@ function Schools() {
             school={school}
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
+            showStats={showStats}
+            onSaveStats={async (id, data) => {
+              try {
+                await updateSchoolEnrollment(id, data);
+                showAlert("Statistics updated successfully", "Success", "success");
+              } catch (e) {
+                console.error("Error updating stats:", e);
+                showAlert("Error updating statistics", "Error", "error");
+              }
+            }}
           />
         ))}
       </div>

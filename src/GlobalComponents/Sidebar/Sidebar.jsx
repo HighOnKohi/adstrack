@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
 import {
-  analyticsIcon,
   calendarIcon,
   directoryIcon,
   inventoryIcon,
@@ -37,9 +36,6 @@ export default function Sidebar({ isOpen, onClose }) {
           </a>
           <a onClick={() => handleNav("/inventory")}>
             <img src={inventoryIcon} alt="Inventory" /> Inventory
-          </a>
-          <a onClick={() => handleNav("/analytics")}>
-            <img src={analyticsIcon} alt="Analytics" /> Analytics
           </a>
         </nav>
       </aside>

@@ -2,7 +2,7 @@
     background-color: #A71A2B;
     color: white;
     font-weight: 400;
-    width: 10vw;
+    width: fit-content;
 }
 
 * {
@@ -78,15 +78,36 @@ body {
 }
 
 .close-modal-button {
-    filter: brightness(0);
     position: absolute;
     top: 1rem;
     right: 1rem;
     background: transparent;
     border: none;
-    font-size: 1.5rem;
-    font-weight: bold;
     cursor: pointer;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+}
+
+.close-modal-button img {
+    width: 14px;
+    height: 14px;
+    filter: brightness(0);
+}
+
+.close-modal-button:focus,
+.close-modal-button:focus-visible {
+    outline: none;
+    background-color: #DCDCDC;
+}
+
+.close-modal-button:active {
+    background-color: #D0D0D0;
 }
 
 .school-input-label {
@@ -142,8 +163,8 @@ body {
     background-color: #A71A2B;
     color: white;
     font-weight: 400;
-    width: min(140px, 40vw);
-    min-width: 120px;
+    width: fit-content;
+    min-width: 0;
 }
 
 .school-card {
@@ -218,6 +239,9 @@ body {
     background-color: white;
     width: 270px;
     height: 300px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .school-card-label {
@@ -255,6 +279,11 @@ body {
     font-size: 21px;
     color:#222222;
     min-height: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .school-card-body p {
@@ -262,6 +291,9 @@ body {
     padding-left: 20px;
     padding-right: 23px;
     color:#787878;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .school-card-footer-divider {
@@ -376,4 +408,120 @@ body {
 
 .school-detail-actions .school-card-view-details-button img {
     filter: invert(1) brightness(2);
+}
+
+/* ---- Buttons row ---- */
+.school-buttons-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.manage-stats-button {
+    background-color: #8A1524;
+    color: white;
+    font-weight: 400;
+    width: fit-content;
+    min-width: 0;
+    border: none;
+    padding: 0.6em 1.2em;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.manage-stats-button:hover {
+    background-color: #6E111D;
+}
+
+.manage-stats-button.active {
+    background-color: #8A1524;
+}
+
+.manage-stats-button:focus,
+.manage-stats-button:focus-visible {
+    outline: none;
+}
+
+/* ---- Card face fade ---- */
+.school-card-body {
+    position: relative;
+    min-height: 150px;
+}
+
+.school-card-face {
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.school-card-face.active {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+}
+
+/* ---- Stats summary on card ---- */
+.school-stats-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0 20px 0 20px;
+}
+
+.school-stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.2rem 0;
+}
+
+.school-stats-year {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.school-stats-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* ---- Stats input in modal ---- */
+.school-stats-input {
+    background-color: #FAFAFA;
+    width: 100%;
+    border: 1px transparent;
+    box-sizing: border-box;
+    color: black;
+    padding: 0.75rem 1rem;
+    font-size: 16px;
+    border-radius: 0.4rem;
+    outline: none;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+    .school-buttons-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .manage-stats-button {
+        width: 100%;
+        text-align: center;
+    }
 }

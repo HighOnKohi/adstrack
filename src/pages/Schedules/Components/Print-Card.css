@@ -17,12 +17,27 @@
 .print-form .close-modal-button {
   position: static;
   margin: 0;
-  filter: brightness(0);
   background: transparent;
   border: none;
-  font-size: 1.5rem;
-  font-weight: bold;
   cursor: pointer;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.print-form .close-modal-button:focus,
+.print-form .close-modal-button:focus-visible {
+  outline: none;
+  background-color: #DCDCDC;
+}
+
+.print-form .close-modal-button:active {
+  background-color: #D0D0D0;
 }
 
 .print-form h1 {

@@ -143,3 +143,21 @@ export const deleteSchool = async (id) => {
   const schoolRef = doc(db, "Schools", id);
   await deleteDoc(schoolRef);
 };
+
+export const getSchoolYears = () => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  // If we're past June, the current school year started this year
+  const endYear = now.getMonth() >= 5 ? currentYear + 1 : currentYear;
+  const years = [];
+  for (let i = 4; i >= 0; i--) {
+    const start = endYear - 1 - i;
+    years.push(`${start}-${start + 1}`);
+  }
+  return years;
+};
+
+export const updateSchoolEnrollment = async (id, enrollmentData) => {
+  const schoolRef = doc(db, "Schools", id);
+  await updateDoc(schoolRef, { Enrollment: enrollmentData });
+};
