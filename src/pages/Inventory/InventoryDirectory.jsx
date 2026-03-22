@@ -63,8 +63,7 @@ function InventoryDirectory() {
       <div className="inventory-label">
         <h1>Inventory Directory</h1>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut.
+          Track and manage all inventory items, stock levels, and categories.
         </p>
       </div>
 

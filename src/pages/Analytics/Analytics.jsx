@@ -1,9 +1,9 @@
 function Analytics() {
     return(
-        <div>
+        <div className="analytics-content">
             <div className="Label">
                 <h1> Analytics </h1>
-                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. </p>
+                <p> View performance metrics and data insights. </p>
             </div>
         </div>
     );

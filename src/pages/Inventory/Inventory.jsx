@@ -1,5 +1,6 @@
-﻿import { useState, useEffect, useMemo, useRef } from "react";
-import { addIcon, closeIcon } from "../../assets/Icons/index.js";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { addIcon } from "../../assets/Icons/index.js";
+import { useAlert } from "../../GlobalComponents/useAlert.js";
 import InventoryRow from "./components/InventoryRow.jsx";
 import AddItemModal from "./components/AddItemModal.jsx";
 import {
@@ -16,6 +17,7 @@ import {
 import "./Inventory.css";
 
 function Inventory() {
+  const { showAlert, showConfirmation } = useAlert();
   const [items, setItems] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState("connecting");
   const [searchText, setSearchText] = useState("");
@@ -29,7 +31,6 @@ function Inventory() {
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [deleteCandidate, setDeleteCandidate] = useState(null);
 
   const categoryFilterRef = useRef(null);
   const stockFilterRef = useRef(null);
@@ -181,27 +182,24 @@ function Inventory() {
     try {
       await deleteInventoryItem(docId);
       setItems((prev) => prev.filter((item) => item.docId !== docId));
-      setStatusMessage("Inventory item deleted successfully.");
+      showAlert("Inventory item deleted successfully.", "Success", "success");
     } catch (error) {
       console.error("Delete inventory failed:", error);
-      setErrorMessage("Failed to delete item. Please try again.");
+      showAlert("Failed to delete item. Please try again.", "Error", "error");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const confirmDeleteItem = async () => {
-    if (!deleteCandidate || !deleteCandidate.docId) {
-      setDeleteCandidate(null);
-      return;
-    }
-
-    await handleDeleteItem(deleteCandidate.docId);
-    setDeleteCandidate(null);
-  };
-
-  const cancelDelete = () => {
-    setDeleteCandidate(null);
+  const promptDelete = (item) => {
+    showConfirmation(
+      `Are you sure you want to delete "${item.name || item.id || "this item"}"? This action cannot be undone.`,
+      "Confirm Delete",
+      async (confirmed) => {
+        if (!confirmed) return;
+        await handleDeleteItem(item.docId);
+      },
+    );
   };
 
   return (
@@ -209,8 +207,7 @@ function Inventory() {
       <div className="inventory-label">
         <h1>Inventory Directory</h1>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Track and manage all inventory items, stock levels, and categories.
         </p>
         <div className="realtime-status">
           <span
@@ -426,57 +423,13 @@ function Inventory() {
                 key={item.docId || item.id || item.name}
                 item={item}
                 onEditStart={openEditModal}
-                onDelete={(itemToDelete) => setDeleteCandidate(itemToDelete)}
+                onDelete={(itemToDelete) => promptDelete(itemToDelete)}
               />
             ))
           )}
         </div>
       </div>
 
-      {deleteCandidate && (
-        <div
-          className="inventory-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="inventory-modal">
-            <button
-              className="inventory-modal-close"
-              type="button"
-              onClick={cancelDelete}
-              aria-label="Close"
-            >
-              <img src={closeIcon} alt="Close" />
-            </button>
-            <h2>Confirm delete</h2>
-            <p>
-              Are you sure you want to delete "
-              {deleteCandidate.name || deleteCandidate.id || "this item"}"? This
-              action cannot be undone.
-            </p>
-            <div
-              className="inventory-row-actions"
-              style={{ justifyContent: "flex-end", marginTop: "12px" }}
-            >
-              <button
-                className="inventory-action-btn"
-                onClick={cancelDelete}
-                type="button"
-              >
-                Cancel
-              </button>
-              <button
-                className="inventory-add-button"
-                onClick={confirmDeleteItem}
-                type="button"
-                disabled={isSaving}
-              >
-                {isSaving ? "Deleting..." : "Yes, delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {isModalOpen && (
         <AddItemModal

@@ -7,11 +7,9 @@ export default function Homepage() {
     <section className="homepage-content">
       <div>
         <div className="Label">
-          <h1> Homepage </h1>
+          <h1> Home </h1>
           <p>
-            {" "}
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut.{" "}
+            View the school's mission, vision, and objectives at a glance.
           </p>
         </div>
       </div>

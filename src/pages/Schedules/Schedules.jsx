@@ -244,9 +244,7 @@ function Schedules() {
         <div className="Label">
           <h1> Schedule Directory </h1>
           <p>
-            {" "}
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut.{" "}
+            Manage and view all scheduled meetings and appointments.
           </p>
           <div className="realtime-status">
             <span

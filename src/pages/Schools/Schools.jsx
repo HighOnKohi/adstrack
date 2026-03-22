@@ -14,7 +14,7 @@ import {
 } from "./SchoolsServices.jsx";
 
 function Schools() {
-  const { showAlert } = useAlert();
+  const { showAlert, showConfirmation } = useAlert();
   const {
     showForm,
     setShowForm,
@@ -28,8 +28,7 @@ function Schools() {
   const [connectionStatus, setConnectionStatus] = useState("connecting");
   const [editMode, setEditMode] = useState(false);
   const [editingSchool, setEditingSchool] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null);
+
 
   const resetForm = () => {
     setFormData({
@@ -64,8 +63,20 @@ function Schools() {
   };
 
   const handleDeleteClick = (school) => {
-    setDeleteTarget(school);
-    setShowDeleteModal(true);
+    showConfirmation(
+      `Are you sure you want to remove "${school.data.Name}"? This cannot be undone.`,
+      "Confirm Delete",
+      async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await deleteSchool(school.id);
+          showAlert("School deleted successfully", "Success", "success");
+        } catch (e) {
+          console.error("Error deleting school:", e);
+          showAlert("Error deleting school", "Error", "error");
+        }
+      },
+    );
   };
 
   const submitSchool = async () => {
@@ -101,20 +112,6 @@ function Schools() {
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const confirmDeleteSchool = async () => {
-    if (!deleteTarget) return;
-
-    try {
-      await deleteSchool(deleteTarget.id);
-      showAlert("School deleted successfully", "Success", "success");
-      setShowDeleteModal(false);
-      setDeleteTarget(null);
-    } catch (e) {
-      console.error("Error deleting school:", e);
-      showAlert("Error deleting school", "Error", "error");
-    }
-  };
-
   useEffect(() => {
     const unsubscribe = onSnapshot(
       query(collection(db, "Schools"), orderBy("Name", "asc")),
@@ -145,8 +142,7 @@ function Schools() {
         <div className="Label">
           <h1> School Directory </h1>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut.
+            Manage and view all registered schools in the system.
           </p>
           <div className="realtime-status">
             <span
@@ -307,36 +303,6 @@ function Schools() {
         </div>
       )}
 
-      {showDeleteModal && deleteTarget && (
-        <div
-          className="school-modal-overlay"
-          onClick={() => setShowDeleteModal(false)}
-        >
-          <div className="school-form" onClick={(e) => e.stopPropagation()}>
-            <h2>Confirm Delete</h2>
-            <p>
-              Are you sure you want to remove "{deleteTarget.data.Name}"? This
-              cannot be undone.
-            </p>
-            <div className="school-form-grid">
-              <button
-                className="school-submit"
-                style={{ backgroundColor: "#888" }}
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="school-submit"
-                style={{ backgroundColor: "#A71A2B" }}
-                onClick={confirmDeleteSchool}
-              >
-                Confirm Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
