@@ -388,7 +388,8 @@ h6 {
   font-family: "DM Serif Display", serif;
 }
 
-@media (max-width: 980px) {  .inventory-filters {
+@media (max-width: 980px) {
+  .inventory-filters {
     display: flex;
     flex-wrap: wrap;
     width: 100%;

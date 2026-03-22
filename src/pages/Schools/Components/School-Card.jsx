@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { closeIcon } from "../../../assets/Icons/index.js";
+import { closeIcon, editIcon, trashIcon } from "../../../assets/Icons/index.js";
 
-function SchoolCard({school}) {
+function SchoolCard({ school, onEdit, onDelete }) {
     const [showModal, setShowModal] = useState(false);
 
     return(
@@ -69,6 +69,30 @@ function SchoolCard({school}) {
                                 </div>
                             
                             </div>
+                        </div>
+                        <div className="school-detail-actions">
+                            <button
+                                className="school-card-view-details-button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowModal(false);
+                                    if (onEdit) onEdit(school);
+                                }}
+                            >
+                                <img src={editIcon} alt="Edit" style={{ width: 16, marginRight: 6 }} />
+                                Edit
+                            </button>
+                            <button
+                                className="school-card-view-details-button delete"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowModal(false);
+                                    if (onDelete) onDelete(school);
+                                }}
+                            >
+                                <img src={trashIcon} alt="Delete" style={{ width: 16, marginRight: 6 }} />
+                                Delete
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -9,9 +9,11 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { closeIcon, trashIcon, editIcon } from "../../../assets/Icons/index.js";
+import { useAlert } from "../../../GlobalComponents/useAlert.js";
 import "./Schedule-Card.css";
 
 function ScheduleCard({ meeting, onUpdate }) {
+  const { showAlert, showConfirmation } = useAlert();
   const [showEditModal, setShowEditModal] = useState(false);
   const [schoolData, setSchoolData] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -70,13 +72,21 @@ function ScheduleCard({ meeting, onUpdate }) {
 
     const companions = parseInt(editFormData.Companions, 10);
     if (companions > 10) {
-      alert("Companion count cannot exceed 10.");
+      showAlert(
+        "Companion count cannot exceed 10.",
+        "Validation Error",
+        "error",
+      );
       return;
     }
 
     const attendees = parseInt(editFormData.Attendee_Est, 10);
     if (editFormData.Attendee_Est && (attendees < 30 || attendees > 500)) {
-      alert("Estimated attendees must be between 30 and 500.");
+      showAlert(
+        "Estimated attendees must be between 30 and 500.",
+        "Validation Error",
+        "error",
+      );
       return;
     }
 
@@ -85,7 +95,11 @@ function ScheduleCard({ meeting, onUpdate }) {
       const scheduleTime = new Date(Schedule_Date).getTime();
 
       if (scheduleTime < contractTime) {
-        alert("Schedule Date cannot be before Date of Contract.");
+        showAlert(
+          "Schedule Date cannot be before Date of Contract.",
+          "Validation Error",
+          "error",
+        );
         return;
       }
     }
@@ -100,14 +114,20 @@ function ScheduleCard({ meeting, onUpdate }) {
         : null;
 
       if (scheduleTime && etdTime < scheduleTime + 3600000) {
-        alert(
+        showAlert(
           "Estimated Time of Departure must be at least 1 hour after Schedule Date & Time.",
+          "Validation Error",
+          "error",
         );
         return;
       }
 
       if (contractTime && etdTime < contractTime) {
-        alert("Estimated Time of Departure cannot be before Date of Contract.");
+        showAlert(
+          "Estimated Time of Departure cannot be before Date of Contract.",
+          "Validation Error",
+          "error",
+        );
         return;
       }
     }
@@ -117,7 +137,11 @@ function ScheduleCard({ meeting, onUpdate }) {
       const scheduleObj = new Date(Schedule_Date);
       const scheduleHours = scheduleObj.getHours();
       if (scheduleHours < 6 || scheduleHours >= 18) {
-        alert("Schedule time must be between 6:00 AM and 6:00 PM.");
+        showAlert(
+          "Schedule time must be between 6:00 AM and 6:00 PM.",
+          "Validation Error",
+          "error",
+        );
         return;
       }
 
@@ -138,7 +162,11 @@ function ScheduleCard({ meeting, onUpdate }) {
         });
 
         if (conflict) {
-          alert("Schedules must have at least a 1-hour interval between them.");
+          showAlert(
+            "Schedules must have at least a 1-hour interval between them.",
+            "Validation Error",
+            "error",
+          );
           return;
         }
       } catch (e) {
@@ -146,25 +174,40 @@ function ScheduleCard({ meeting, onUpdate }) {
       }
     }
 
-    const meetingRef = doc(db, "Meetings", meeting.id);
-    await updateDoc(meetingRef, { ...editFormData, Date_Modified: new Date() });
+    try {
+      const meetingRef = doc(db, "Meetings", meeting.id);
+      await updateDoc(meetingRef, {
+        ...editFormData,
+        Date_Modified: new Date(),
+      });
 
-    setShowEditModal(false);
-    if (onUpdate) onUpdate();
+      setShowEditModal(false);
+      if (onUpdate) onUpdate();
 
-    alert("Schedule updated successfully!");
+      showAlert("Schedule updated successfully!", "Success", "success");
+    } catch (e) {
+      console.error("Error updating schedule:", e);
+      showAlert("Error updating schedule", "Error", "error");
+    }
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this schedule?")) {
-      try {
-        await deleteDoc(doc(db, "Meetings", meeting.id));
-        if (onUpdate) onUpdate();
-      } catch (e) {
-        console.error("Error deleting schedule: ", e);
-        alert("Error deleting schedule");
-      }
-    }
+    showConfirmation(
+      "Are you sure you want to delete this schedule?",
+      "Confirm Delete",
+      async (confirmed) => {
+        if (confirmed) {
+          try {
+            await deleteDoc(doc(db, "Meetings", meeting.id));
+            if (onUpdate) onUpdate();
+            showAlert("Schedule deleted successfully", "Success", "success");
+          } catch (e) {
+            console.error("Error deleting schedule: ", e);
+            showAlert("Error deleting schedule", "Error", "error");
+          }
+        }
+      },
+    );
   };
 
   const formatDate = (dateString) => {

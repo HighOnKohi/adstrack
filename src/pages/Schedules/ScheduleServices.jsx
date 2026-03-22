@@ -90,33 +90,37 @@ export const useScheduleForm = (onSuccess) => {
       !formData.Companions ||
       !formData.Schedule_Date
     ) {
-      alert("Please complete details");
-      return;
+      return { success: false, error: "Please complete details" };
     }
 
     const companions = parseInt(formData.Companions, 10);
     if (companions > 10) {
-      alert("Companion count cannot exceed 10.");
-      return;
+      return { success: false, error: "Companion count cannot exceed 10." };
     }
 
     const attendees = parseInt(formData.Attendee_Est, 10);
     if (formData.Attendee_Est && (attendees < 30 || attendees > 100)) {
-      alert("Estimated attendees must be between 30 and 100.");
-      return;
+      return {
+        success: false,
+        error: "Estimated attendees must be between 30 and 100.",
+      };
     }
 
     const newTime = new Date(formData.Schedule_Date).getTime();
     if (isNaN(newTime)) {
-      alert("Please enter a valid schedule date and time.");
-      return;
+      return {
+        success: false,
+        error: "Please enter a valid schedule date and time.",
+      };
     }
 
     const scheduleObj = new Date(formData.Schedule_Date);
     const scheduleHours = scheduleObj.getHours();
     if (scheduleHours < 6 || scheduleHours >= 18) {
-      alert("Schedule time must be between 6:00 AM and 6:00 PM.");
-      return;
+      return {
+        success: false,
+        error: "Schedule time must be between 6:00 AM and 6:00 PM.",
+      };
     }
 
     const { Date_Contract, Schedule_Date, ETD } = formData;
@@ -126,8 +130,10 @@ export const useScheduleForm = (onSuccess) => {
       const scheduleTime = new Date(Schedule_Date).getTime();
 
       if (scheduleTime < contractTime) {
-        alert("Schedule Date cannot be before Date of Contract.");
-        return;
+        return {
+          success: false,
+          error: "Schedule Date cannot be before Date of Contract.",
+        };
       }
     }
 
@@ -141,15 +147,19 @@ export const useScheduleForm = (onSuccess) => {
         : null;
 
       if (scheduleTime && etdTime < scheduleTime + 3600000) {
-        alert(
-          "Estimated Time of Departure must be at least 1 hour after Schedule Date & Time.",
-        );
-        return;
+        return {
+          success: false,
+          error:
+            "Estimated Time of Departure must be at least 1 hour after Schedule Date & Time.",
+        };
       }
 
       if (contractTime && etdTime < contractTime) {
-        alert("Estimated Time of Departure cannot be before Date of Contract.");
-        return;
+        return {
+          success: false,
+          error:
+            "Estimated Time of Departure cannot be before Date of Contract.",
+        };
       }
     }
 
@@ -181,8 +191,10 @@ export const useScheduleForm = (onSuccess) => {
         return t !== null && Math.abs(t - newTime) < 3600000;
       });
       if (conflict) {
-        alert("Schedules must have at least a 1-hour interval between them.");
-        return;
+        return {
+          success: false,
+          error: "Schedules must have at least a 1-hour interval between them.",
+        };
       }
       const timestamp = new Date();
       await addDoc(collection(db, "Meetings"), {
@@ -191,13 +203,13 @@ export const useScheduleForm = (onSuccess) => {
         Date_Created: timestamp,
         Date_Modified: timestamp,
       });
-      alert("Schedule Registered Successfully");
       setShowForm(false);
       setFormData(getDefaultFormData());
       if (onSuccess) onSuccess();
+      return { success: true, message: "Schedule Registered Successfully" };
     } catch (e) {
       console.error("Error adding document: ", e);
-      alert("Error registering schedule");
+      return { success: false, error: "Error registering schedule" };
     }
   };
 

@@ -1,34 +1,40 @@
 .layout {
-    display: flex;
-    min-height: 100vh;
+  display: flex;
+  min-height: 100vh;
 }
 
 .outlet {
-    margin-left: 40px;
+  margin-left: 40px;
 }
 
 .main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    background: #f1f3f4;
-    min-height: 100vh;
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background: #f1f3f4;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 @media (max-width: 860px) {
-    .layout { flex-direction: column; }
-    .outlet { margin-left: 0; margin-top: 0.5rem; padding: 0 0.7rem; }
+  .layout {
+    flex-direction: column;
+  }
+  .outlet {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    padding: 0 0.7rem;
+  }
 }
 
 .Label h1 {
-    margin: 0px;
-    margin-top: 40px;
-    color: #2B2B2B;
+  margin: 0px;
+  margin-top: 40px;
+  color: #2b2b2b;
 }
 
 .Label p {
-    margin-top: 20px;
-    font-weight: 500;
-    color: #2B2B2B;
+  margin-top: 20px;
+  font-weight: 500;
+  color: #2b2b2b;
 }

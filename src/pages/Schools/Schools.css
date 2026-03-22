@@ -106,7 +106,7 @@ body {
 
 @media (max-width: 700px) {
     .school-form-grid { grid-template-columns: 1fr; }
-    .school-submit, .register-school-button { width: fit-content; padding: 0.6rem 1rem; }
+    .school-submit, .register-school-button { width: 100%; max-width: none; padding: 0.6rem 1rem; }
     .school-card { width: 100%; max-width: 360px; }
     .school-card-container { width: 100%; gap: 1rem; }
     .school-detail-modal { width: min(95vw, 520px); }
@@ -125,11 +125,81 @@ body {
     background-color: #A71A2B;
     color: white;
     font-weight: 400;
-    width: 10vw;
+    width: min(140px, 40vw);
+    min-width: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.register-school-button {
+    background-color: #A71A2B;
+    color: white;
+    font-weight: 400;
+    width: min(140px, 40vw);
+    min-width: 120px;
+}
+
+.school-card {
+    width: min(100%, 270px);
+    max-width: 100%;
+}
+
+@media (max-width: 980px) {
+    .school-card-container {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .school-card {
+      width: min(100%, 360px);
+      margin: 0 auto;
+    }
+
+    .school-form {
+      width: min(95vw, 480px);
+    }
+
+    .school-form-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .Label h1 {
+      font-size: 1.6rem;
+    }
+
+    .Label p {
+      font-size: 0.9rem;
+    }
+
+    .school-card {
+      width: 100%;
+      max-width: none;
+    }
+
+    .school-card-container {
+      gap: 1rem;
+      padding: 0.25rem;
+    }
+
+    .school-card-body h1 {
+      font-size: 1.35rem;
+    }
+
+    .school-submit,
+    .register-school-button {
+      width: 100%;
+      min-width: 0;
+      padding: 0.8rem;
+    }
 }
 
 .school-card-container {
@@ -277,4 +347,33 @@ body {
 .school-detail-value {
     font-size: 1rem;
     color: #1a1a1a;
+}
+
+.school-detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.school-detail-actions .school-card-view-details-button {
+    background-color: #A71A2B;
+    border: none;
+    color: white;
+    padding: 0.5rem 0.9rem;
+    font-weight: 600;
+    border-radius: 0.4rem;
+    cursor: pointer;
+}
+
+.school-detail-actions .school-card-view-details-button.delete {
+    background-color: #d93025;
+}
+
+.school-detail-actions .school-card-view-details-button:hover {
+    opacity: 0.92;
+}
+
+.school-detail-actions .school-card-view-details-button img {
+    filter: invert(1) brightness(2);
 }

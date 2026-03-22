@@ -4,13 +4,16 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { AlertModalProvider } from "./GlobalComponents/AlertModal.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <AlertModalProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </AlertModalProvider>
     </BrowserRouter>
-  </StrictMode>
+  </StrictMode>,
 );

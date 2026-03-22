@@ -4,20 +4,116 @@ import { useState, useEffect } from "react";
 import { db } from "../../config/fbConf.js";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { addIcon, closeIcon } from "../../assets/Icons/index.js";
+import { useAlert } from "../../GlobalComponents/useAlert.js";
 import {
   ProvinceSelector,
   MunicipalitySelector,
   useSchoolForm,
+  updateSchool,
+  deleteSchool,
 } from "./SchoolsServices.jsx";
 
 function Schools() {
-  const { showForm, setShowForm, formData, handleChange, handleSubmit } =
-    useSchoolForm();
+  const { showAlert } = useAlert();
+  const {
+    showForm,
+    setShowForm,
+    formData,
+    setFormData,
+    handleChange,
+    handleSubmit,
+  } = useSchoolForm();
 
   const [schoolList, setSchoolList] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState("connecting");
+  const [editMode, setEditMode] = useState(false);
+  const [editingSchool, setEditingSchool] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const resetForm = () => {
+    setFormData({
+      Name: "",
+      Category: "",
+      Contact_Person: "",
+      Contact_Num: "",
+      Email: "",
+      Province: "",
+      Municipality: "",
+    });
+    setEditMode(false);
+    setEditingSchool(null);
+  };
+
+  const handleEditClick = (school) => {
+    const [municipality = "", province = ""] = (school.data.Address || "")
+      .split(",")
+      .map((v) => v.trim());
+    setFormData({
+      Name: school.data.Name || "",
+      Category: school.data.Category || "",
+      Contact_Person: school.data.Contact_Person || "",
+      Contact_Num: school.data.Contact_Num || "",
+      Email: school.data.Email || "",
+      Province: province,
+      Municipality: municipality,
+    });
+    setEditMode(true);
+    setEditingSchool(school);
+    setShowForm(true);
+  };
+
+  const handleDeleteClick = (school) => {
+    setDeleteTarget(school);
+    setShowDeleteModal(true);
+  };
+
+  const submitSchool = async () => {
+    if (editMode && editingSchool) {
+      try {
+        const updateData = {
+          Name: formData.Name,
+          Category: formData.Category,
+          Contact_Person: formData.Contact_Person,
+          Contact_Num: formData.Contact_Num,
+          Email: formData.Email,
+          Address: `${formData.Municipality}, ${formData.Province}`,
+        };
+        await updateSchool(editingSchool.id, updateData);
+        showAlert("School updated successfully", "Success", "success");
+        resetForm();
+        setShowForm(false);
+      } catch (e) {
+        console.error("Error updating school:", e);
+        showAlert("Error updating school", "Error", "error");
+      }
+      return;
+    }
+
+    const result = await handleSubmit();
+    if (result.success) {
+      showAlert(result.message, "Success", "success");
+    } else {
+      showAlert(result.error, "Error", "error");
+    }
+  };
+
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const confirmDeleteSchool = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await deleteSchool(deleteTarget.id);
+      showAlert("School deleted successfully", "Success", "success");
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
+    } catch (e) {
+      console.error("Error deleting school:", e);
+      showAlert("Error deleting school", "Error", "error");
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -85,14 +181,22 @@ function Schools() {
       </div>
       <button
         className="register-school-button"
-        onClick={() => setShowForm(true)}
+        onClick={() => {
+          resetForm();
+          setShowForm(true);
+        }}
       >
         Register School
       </button>
 
       <div className="school-card-container">
         {schoolList.map((school) => (
-          <SchoolCard school={school} />
+          <SchoolCard
+            key={school.id}
+            school={school}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteClick}
+          />
         ))}
       </div>
 
@@ -101,11 +205,14 @@ function Schools() {
           <div className="school-form">
             <button
               className="close-modal-button"
-              onClick={() => setShowForm(false)}
+              onClick={() => {
+                setShowForm(false);
+                resetForm();
+              }}
             >
               <img src={closeIcon} alt="close" />
             </button>
-            <h1> Register New School </h1>
+            <h1>{editMode ? "Edit School" : "Register New School"}</h1>
 
             <div className="school-form-grid">
               <div className="school-input-group school-full-width">
@@ -192,10 +299,41 @@ function Schools() {
               </div>
             </div>
 
-            <button className="school-submit" onClick={handleSubmit}>
+            <button className="school-submit" onClick={submitSchool}>
               <img src={addIcon} alt="Add" />
-              Submit
+              {editMode ? "Update" : "Submit"}
             </button>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && deleteTarget && (
+        <div
+          className="school-modal-overlay"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div className="school-form" onClick={(e) => e.stopPropagation()}>
+            <h2>Confirm Delete</h2>
+            <p>
+              Are you sure you want to remove "{deleteTarget.data.Name}"? This
+              cannot be undone.
+            </p>
+            <div className="school-form-grid">
+              <button
+                className="school-submit"
+                style={{ backgroundColor: "#888" }}
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="school-submit"
+                style={{ backgroundColor: "#A71A2B" }}
+                onClick={confirmDeleteSchool}
+              >
+                Confirm Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

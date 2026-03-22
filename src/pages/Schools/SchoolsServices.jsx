@@ -1,7 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useState } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import {
   provinces4A,
   batangasMunicipalities,
@@ -90,8 +96,7 @@ export const useSchoolForm = () => {
       !formData.Province ||
       !formData.Municipality
     ) {
-      alert("Please complete details");
-      return;
+      return { success: false, error: "Please complete details" };
     }
     try {
       await addDoc(collection(db, "Schools"), {
@@ -102,7 +107,6 @@ export const useSchoolForm = () => {
         Email: formData.Email,
         Address: `${formData.Municipality}, ${formData.Province}`,
       });
-      alert("School Registered Successfully");
       setShowForm(false);
       setFormData({
         Name: "",
@@ -113,11 +117,29 @@ export const useSchoolForm = () => {
         Province: "",
         Municipality: "",
       });
+      return { success: true, message: "School Registered Successfully" };
     } catch (e) {
       console.error("Error adding document: ", e);
-      alert("Error registering school");
+      return { success: false, error: "Error registering school" };
     }
   };
 
-  return { showForm, setShowForm, formData, handleChange, handleSubmit };
+  return {
+    showForm,
+    setShowForm,
+    formData,
+    setFormData,
+    handleChange,
+    handleSubmit,
+  };
+};
+
+export const updateSchool = async (id, data) => {
+  const schoolRef = doc(db, "Schools", id);
+  await updateDoc(schoolRef, data);
+};
+
+export const deleteSchool = async (id) => {
+  const schoolRef = doc(db, "Schools", id);
+  await deleteDoc(schoolRef);
 };

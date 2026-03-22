@@ -8,6 +8,7 @@ import "../Schedules.css";
 import { db } from "../../../config/fbConf.js";
 import { doc, getDoc } from "firebase/firestore";
 import { closeIcon } from "../../../assets/Icons/index.js";
+import { useAlert } from "../../../GlobalComponents/useAlert.js";
 
 const DATE_FILTER_OPTIONS = [
   { value: "this_week", label: "This week" },
@@ -101,6 +102,7 @@ function getDateOfContract(meeting) {
 }
 
 function PrintCard({ meetings = [], schools = [], onClose }) {
+  const { showAlert } = useAlert();
   const [selectedMeetings, setSelectedMeetings] = useState([]);
   const [schoolData, setSchoolData] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);
@@ -264,7 +266,11 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
 
   const generatePDF = async () => {
     if (selectedMeetings.length === 0) {
-      alert("Please select at least one schedule to print");
+      showAlert(
+        "Please select at least one schedule to print",
+        "No Selection",
+        "warning",
+      );
       return;
     }
 
@@ -370,12 +376,12 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
       document.body.removeChild(tempContainer);
 
       setIsGenerating(false);
-      alert("PDF generated successfully!");
+      showAlert("PDF generated successfully!", "Success", "success");
       onClose();
     } catch (error) {
       console.error("Error generating PDF:", error);
       setIsGenerating(false);
-      alert("Error generating PDF. Please try again.");
+      showAlert("Error generating PDF. Please try again.", "Error", "error");
     }
   };
 

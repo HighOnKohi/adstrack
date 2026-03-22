@@ -8,6 +8,7 @@ import {
 import { useState, useEffect, useMemo, useRef } from "react";
 import { db } from "../../config/fbConf.js";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { useAlert } from "../../GlobalComponents/useAlert.js";
 import { useScheduleForm } from "./ScheduleServices.jsx";
 import ScheduleCard from "./Components/Schedule-Card.jsx";
 import PrintCard from "./Components/Print-Card.jsx";
@@ -104,6 +105,7 @@ function getDateOfContract(meeting) {
 }
 
 function Schedules() {
+  const { showAlert } = useAlert();
   const [meetings, setMeetings] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState("connecting");
   const [statusMessage, setStatusMessage] = useState("");
@@ -128,6 +130,15 @@ function Schedules() {
   const nameFilterRef = useRef(null);
   const dateFilterRef = useRef(null);
   const contractFilterRef = useRef(null);
+
+  const handleSubmitWithAlert = async () => {
+    const result = await handleSubmit();
+    if (result.success) {
+      showAlert(result.message, "Success", "success");
+    } else {
+      showAlert(result.error, "Error", "error");
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -634,7 +645,7 @@ function Schedules() {
               </div>
             </div>
 
-            <button className="sched-submit" onClick={handleSubmit}>
+            <button className="sched-submit" onClick={handleSubmitWithAlert}>
               <img src={addIcon} alt="Add" />
               Submit
             </button>
