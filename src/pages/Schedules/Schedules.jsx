@@ -124,12 +124,15 @@ function Schedules() {
   const [selectedSchoolId, setSelectedSchoolId] = useState("");
   const [selectedDateFilter, setSelectedDateFilter] = useState("");
   const [selectedContractFilter, setSelectedContractFilter] = useState("");
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState("");
   const [nameDropdownOpen, setNameDropdownOpen] = useState(false);
   const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
   const [contractDropdownOpen, setContractDropdownOpen] = useState(false);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const nameFilterRef = useRef(null);
   const dateFilterRef = useRef(null);
   const contractFilterRef = useRef(null);
+  const statusFilterRef = useRef(null);
 
   const handleSubmitWithAlert = async () => {
     const result = await handleSubmit();
@@ -151,6 +154,11 @@ function Schedules() {
         !contractFilterRef.current.contains(e.target)
       )
         setContractDropdownOpen(false);
+      if (
+        statusFilterRef.current &&
+        !statusFilterRef.current.contains(e.target)
+      )
+        setStatusDropdownOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -207,6 +215,9 @@ function Schedules() {
         if (!d || d < contractRange.start || d > contractRange.end)
           return false;
       }
+      if (selectedStatusFilter && (meeting.Status || "Pending") !== selectedStatusFilter) {
+          return false;
+      }
       return true;
     });
 
@@ -236,6 +247,7 @@ function Schedules() {
     dateRange,
     selectedContractFilter,
     contractRange,
+    selectedStatusFilter,
   ]);
 
   return (
@@ -289,14 +301,14 @@ function Schedules() {
           <button
             className="schedule-meeting-button"
             onClick={() => setShowPrintModal(true)}
-            style={{ marginLeft: "10px" }}
           >
             <img src={printIcon} alt="Print" />
             Print
           </button>
         </div>
 
-        <div className="schedule-list-labels">
+        <div className="schedules-meeting-table">
+          <div className="schedule-list-labels">
           <div
             className="schedule-label-cell schedule-label-cell-filter"
             ref={nameFilterRef}
@@ -307,6 +319,7 @@ function Schedules() {
               onClick={() => {
                 setDateDropdownOpen(false);
                 setContractDropdownOpen(false);
+                setStatusDropdownOpen(false);
                 setNameDropdownOpen((o) => !o);
               }}
               aria-expanded={nameDropdownOpen}
@@ -373,6 +386,7 @@ function Schedules() {
               onClick={() => {
                 setNameDropdownOpen(false);
                 setDateDropdownOpen(false);
+                setStatusDropdownOpen(false);
                 setContractDropdownOpen((o) => !o);
               }}
               aria-expanded={contractDropdownOpen}
@@ -441,6 +455,7 @@ function Schedules() {
               onClick={() => {
                 setNameDropdownOpen(false);
                 setContractDropdownOpen(false);
+                setStatusDropdownOpen(false);
                 setDateDropdownOpen((o) => !o);
               }}
               aria-expanded={dateDropdownOpen}
@@ -499,11 +514,73 @@ function Schedules() {
               </div>
             )}
           </div>
-          <div className="schedule-label-cell">STATUS</div>
+          <div
+            className="schedule-label-cell schedule-label-cell-filter"
+            ref={statusFilterRef}
+          >
+            <button
+              type="button"
+              className="schedule-label-filter-btn"
+              onClick={() => {
+                setNameDropdownOpen(false);
+                setContractDropdownOpen(false);
+                setDateDropdownOpen(false);
+                setStatusDropdownOpen((o) => !o);
+              }}
+              aria-expanded={statusDropdownOpen}
+              aria-haspopup="listbox"
+            >
+              <span className="schedule-label-filter-text">STATUS</span>
+              {selectedStatusFilter ? (
+                <span className="schedule-label-filter-active">
+                  {" "}
+                  ({selectedStatusFilter})
+                </span>
+              ) : null}
+              <span
+                className="schedule-label-filter-chevron"
+                style={{ paddingLeft: "10px" }}
+                aria-hidden
+              >
+                ▼
+              </span>
+            </button>
+            {statusDropdownOpen && (
+              <div className="schedule-filter-dropdown" role="listbox">
+                <button
+                  type="button"
+                  className="schedule-filter-option"
+                  onClick={() => {
+                    setSelectedStatusFilter("");
+                    setStatusDropdownOpen(false);
+                  }}
+                  role="option"
+                  aria-selected={!selectedStatusFilter}
+                >
+                  All Statuses
+                </button>
+                {["Pending", "Confirmed", "Done"].map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    className="schedule-filter-option"
+                    onClick={() => {
+                      setSelectedStatusFilter(status);
+                      setStatusDropdownOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={selectedStatusFilter === status}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="schedule-label-cell"></div>
-        </div>
+          </div>
 
-        <div className="schedule-list-container">
+          <div className="schedule-list-container">
           {filteredMeetings.length === 0 ? (
             <div className="no-schedules">No schedules found</div>
           ) : (
@@ -516,6 +593,7 @@ function Schedules() {
               />
             ))
           )}
+          </div>
         </div>
       </div>
 

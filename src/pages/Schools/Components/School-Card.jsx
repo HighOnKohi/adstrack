@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { closeIcon, editIcon, trashIcon, addIcon } from "../../../assets/Icons/index.js";
-import { getSchoolYears } from "../SchoolsServices.jsx";
+import {
+    getSchoolYears,
+    sumEnrollmentForSchoolYears,
+    sumEnrollmentDraft,
+} from "../SchoolsServices.jsx";
+import { useAccomplishedMeetingsCount } from "../useAccomplishedMeetingsCount.js";
 
 function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
     const [showModal, setShowModal] = useState(false);
     const [editingStats, setEditingStats] = useState(false);
     const schoolYears = getSchoolYears();
     const enrollment = school.data.Enrollment || {};
+    const accomplishedMeetings = useAccomplishedMeetingsCount(
+        showStats ? school.id : null,
+    );
+    const enrollmentTotalFiveYears = sumEnrollmentForSchoolYears(
+        enrollment,
+        schoolYears,
+    );
 
     const [statsDraft, setStatsDraft] = useState(() => {
         const draft = {};
@@ -48,7 +60,7 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                 <h1> {school.data.Category} </h1>
             </div>
 
-            <div className="school-card-body" style={{ position: "relative" }}>
+            <div className="school-card-body">
                 {/* Front face — school info */}
                 <div className={`school-card-face ${!showStats ? "active" : ""}`}>
                     <h1> {school.data.Name} </h1>
@@ -59,34 +71,44 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                 {/* Back face — stats summary */}
                 <div className={`school-card-face ${showStats ? "active" : ""}`}>
                     <h1> {school.data.Name} </h1>
-                    <div className="school-stats-summary">
-                        {schoolYears.map((yr) => (
-                            <div className="school-stats-row" key={yr}>
-                                <span className="school-stats-year">{yr}</span>
-                                <span className="school-stats-value">
-                                    {enrollment[yr] !== undefined && enrollment[yr] !== null
-                                        ? enrollment[yr].toLocaleString()
-                                        : "—"}
-                                </span>
-                            </div>
-                        ))}
+                    <div className="school-stats-summary school-stats-summary-compact">
+                        <div className="school-stats-metric">
+                            <span className="school-stats-metric-label">
+                                Total enrollment (last 5 school years)
+                            </span>
+                            <span className="school-stats-metric-value">
+                                {enrollmentTotalFiveYears.toLocaleString()}
+                            </span>
+                        </div>
+                        <hr className="school-stats-inline-divider" aria-hidden="true" />
+                        <div className="school-stats-metric">
+                            <span className="school-stats-metric-label">
+                                Meetings accomplished
+                            </span>
+                            <span className="school-stats-metric-value">
+                                {accomplishedMeetings === null
+                                    ? "…"
+                                    : accomplishedMeetings.toLocaleString()}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="school-card-footer-divider"> </div>
-
-            <a
-                className="school-card-view-details-button"
-                onClick={(e) => {
-                    e.preventDefault();
-                    syncDraft();
-                    setEditingStats(false);
-                    setShowModal(true);
-                }}
-            >
-                {showStats ? "View Statistics ⟶" : "View Details ⟶"}
-            </a>
+            <div className="school-card-footer">
+                <div className="school-card-footer-divider" />
+                <a
+                    className="school-card-view-details-button"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        syncDraft();
+                        setEditingStats(false);
+                        setShowModal(true);
+                    }}
+                >
+                    {showStats ? "View Statistics ⟶" : "View Details ⟶"}
+                </a>
+            </div>
 
             {showModal && !showStats && (
                 <div className="school-modal-overlay" onClick={() => setShowModal(false)}>
@@ -166,27 +188,61 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                         <div className="school-detail-content">
                             <div className="school-detail-section">
                                 <h3>Enrollment Statistics</h3>
-                                {schoolYears.map((yr) => (
-                                    <div className="school-detail-item" key={yr}>
-                                        <span className="school-detail-label">SY {yr}</span>
-                                        {editingStats ? (
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                className="school-stats-input"
-                                                value={statsDraft[yr]}
-                                                onChange={(e) => handleStatChange(yr, e.target.value)}
-                                                placeholder="0"
-                                            />
-                                        ) : (
-                                            <span className="school-detail-value">
-                                                {enrollment[yr] !== undefined && enrollment[yr] !== null
-                                                    ? `${enrollment[yr].toLocaleString()} students`
-                                                    : "No data"}
-                                            </span>
-                                        )}
-                                    </div>
-                                ))}
+                                <div className="school-enrollment-years">
+                                    {schoolYears.map((yr, index) => (
+                                        <div
+                                            className={`school-enrollment-year-row${index < schoolYears.length - 1 ? " school-enrollment-year-row-divided" : ""}`}
+                                            key={yr}
+                                        >
+                                            <div className="school-detail-item school-detail-item-tight">
+                                                <span className="school-detail-label">SY {yr}</span>
+                                                {editingStats ? (
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        className="school-stats-input"
+                                                        value={statsDraft[yr]}
+                                                        onChange={(e) =>
+                                                            handleStatChange(yr, e.target.value)
+                                                        }
+                                                        placeholder="0"
+                                                    />
+                                                ) : (
+                                                    <span className="school-detail-value">
+                                                        {enrollment[yr] !== undefined &&
+                                                        enrollment[yr] !== null
+                                                            ? `${enrollment[yr].toLocaleString()} students`
+                                                            : "No data"}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="school-enrollment-total-row">
+                                    <span className="school-detail-label">
+                                        Total (last 5 school years)
+                                    </span>
+                                    <span className="school-detail-value school-enrollment-total-value">
+                                        {editingStats
+                                            ? `${sumEnrollmentDraft(statsDraft, schoolYears).toLocaleString()} students`
+                                            : `${enrollmentTotalFiveYears.toLocaleString()} students`}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="school-detail-section school-detail-section-meetings">
+                                <h3>Meeting Statistics</h3>
+                                <div className="school-detail-item school-detail-item-tight">
+                                    <span className="school-detail-label">
+                                        Meetings accomplished
+                                    </span>
+                                    <span className="school-detail-value school-meeting-accomplished-value">
+                                        {accomplishedMeetings === null
+                                            ? "…"
+                                            : accomplishedMeetings.toLocaleString()}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 

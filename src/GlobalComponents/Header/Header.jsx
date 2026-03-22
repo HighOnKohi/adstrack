@@ -2,14 +2,25 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/templogo.png";
 import "./Header.css";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useAlert } from "../useAlert.js";
 
 export default function Header({ onMenuClick }) {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
+  const { showConfirmation } = useAlert();
   const navigate = useNavigate();
 
+  const displayName =
+    (user?.displayName && user.displayName.trim()) ||
+    (user?.email
+      ? user.email.split("@")[0].replace(/\./g, " ")
+      : "Guest");
+
   const handleLogout = () => {
-    logout();
-    navigate("/");
+    showConfirmation("Are you sure you want to log out?", "Log out", (confirmed) => {
+      if (confirmed) {
+        logout().then(() => navigate("/"));
+      }
+    });
   };
 
   const today = new Date().toLocaleDateString("en-US", {
@@ -43,12 +54,17 @@ export default function Header({ onMenuClick }) {
       </div>
       <div className="header-right">
         <div className="user-details">
-          <span className="username">
-            {user?.username || user?.email || "Guest"}
+          <span className="username" title={displayName}>
+            {displayName}
           </span>
-          <span className="role">ADMINISTRATOR</span>
+          {user?.email ? (
+            <span className="user-email-line" title={user.email}>
+              {user.email}
+            </span>
+          ) : null}
+          <span className="role">{isAdmin ? "Admin" : "User"}</span>
         </div>
-        <button className="logout" onClick={handleLogout}>
+        <button type="button" className="logout" onClick={handleLogout}>
           Logout
         </button>
       </div>

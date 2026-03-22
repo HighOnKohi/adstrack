@@ -52,6 +52,21 @@
   color: #856404;
 }
 
+/* Details modal: pill not inside input chrome. Edit modal: plain select, no pill styling. */
+.sched-status-display {
+  padding: 0.2rem 0 0.35rem;
+  width: 100%;
+}
+
+select.sched-status-select.sched-input {
+  appearance: auto;
+  -webkit-appearance: menulist;
+  background-color: #fafafa;
+  color: #1a1a1a;
+  border: 1px solid #ddd;
+  padding-right: 2rem;
+}
+
 .action-buttons-cell {
   display: flex;
   gap: 10px;

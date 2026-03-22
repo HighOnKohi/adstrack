@@ -161,3 +161,24 @@ export const updateSchoolEnrollment = async (id, enrollmentData) => {
   const schoolRef = doc(db, "Schools", id);
   await updateDoc(schoolRef, { Enrollment: enrollmentData });
 };
+
+/** Sum enrollment numbers for the given school year keys (e.g. last five SY strings). */
+export function sumEnrollmentForSchoolYears(enrollment, schoolYears) {
+  return schoolYears.reduce((sum, yr) => {
+    const v = enrollment?.[yr];
+    const n = typeof v === "number" && Number.isFinite(v) ? v : 0;
+    return sum + n;
+  }, 0);
+}
+
+/** Total from modal draft inputs while editing statistics. */
+export function sumEnrollmentDraft(draft, schoolYears) {
+  return schoolYears.reduce((sum, yr) => {
+    const val = draft[yr];
+    const n =
+      val === "" || val === null || val === undefined
+        ? 0
+        : Number(val);
+    return sum + (Number.isFinite(n) ? n : 0);
+  }, 0);
+}

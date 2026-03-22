@@ -10,12 +10,13 @@ import Calendar from "./pages/Calendar/Calendar.jsx";
 import Inventory from "./pages/Inventory/Inventory.jsx";
 
 import Schools from "./pages/Schools/Schools.jsx";
+import ManageUsers from "./pages/ManageUsers/ManageUsers.jsx";
 
 //Global imports
 import Layout from "./GlobalComponents/Layout.jsx";
 
 // Auth
-import { RequireAuth } from "./context/AuthContext.jsx";
+import { RequireAuth, RequireAdmin } from "./context/AuthContext.jsx";
 
 function App() {
   return (
@@ -35,6 +36,14 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
 
         <Route path="/schools" element={<Schools />} />
+        <Route
+          path="/manage-users"
+          element={
+            <RequireAdmin>
+              <ManageUsers />
+            </RequireAdmin>
+          }
+        />
       </Route>
     </Routes>
   );

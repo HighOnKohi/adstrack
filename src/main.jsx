@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
+import "./gray-scrollbars.css";
+import "./scrollbar-no-arrows.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { AlertModalProvider } from "./GlobalComponents/AlertModal.jsx";

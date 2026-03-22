@@ -1,0 +1,121 @@
+/* Match Schedules list: IBM Plex body, DM Serif headings (from Schedules.css * rules) */
+.manage-users-page {
+  font-family: "IBM Plex Sans", sans-serif;
+  color: #1a1a1a;
+}
+
+.manage-users-page .Label h1 {
+  font-family: "DM Serif Display", serif;
+}
+
+.manage-users-page .Label p,
+.manage-users-page .realtime-status {
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.manage-users-page .manage-users-actions {
+  justify-content: flex-start;
+  width: 97%;
+}
+
+/* Label bar: grid only for Manage Users (does not alter global schedule-list-labels elsewhere) */
+.manage-users-page .manage-users-labels {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.6fr) 5.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: 97%;
+  max-width: 97%;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.manage-users-page .manage-users-labels .schedule-label-cell {
+  flex: unset;
+  padding-left: 0;
+}
+
+.manage-users-page .manage-users-labels .schedule-label-cell:last-child {
+  text-align: right;
+  padding-right: 0;
+}
+
+.manage-users-page .schedule-list-container.manage-users-list-container {
+  width: 97%;
+  max-width: 97%;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Row layout: schedule-card-row (Schedule-Card.css) + column flex like schedules grid intent */
+.manage-users-page .schedule-card-row.manage-user-row {
+  cursor: default;
+}
+
+.manage-users-page .schedule-card-row.manage-user-row .schedule-card-cell:nth-child(1) {
+  flex: 1.15 1 0;
+  min-width: 0;
+}
+
+.manage-users-page .schedule-card-row.manage-user-row .schedule-card-cell:nth-child(2) {
+  flex: 1.65 1 0;
+  min-width: 0;
+}
+
+.manage-users-page .schedule-card-row.manage-user-row .schedule-card-cell:nth-child(3) {
+  flex: 0 0 auto;
+  min-width: 11rem;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.manage-users-page .schedule-card-row.manage-user-row .action-buttons-cell {
+  justify-content: flex-end;
+}
+
+.manage-users-page .no-schedules {
+  font-size: 0.875rem;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.manage-users-modal {
+  width: min(92vw, 520px);
+}
+
+.manage-users-modal .input-label {
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.manage-users-modal h1 {
+  font-family: "DM Serif Display", serif;
+}
+
+@media (max-width: 720px) {
+  .manage-users-page .manage-users-labels {
+    display: none;
+  }
+
+  .manage-users-page .schedule-card-row.manage-user-row {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .manage-users-page .schedule-card-row.manage-user-row .schedule-card-cell {
+    flex: 1 1 100%;
+    width: 100%;
+    padding: 0.25rem 0;
+  }
+
+  .manage-users-page
+    .schedule-card-row.manage-user-row
+    .schedule-card-cell:nth-child(3) {
+    min-width: 0;
+    justify-content: flex-start;
+  }
+
+  .manage-users-page .schedule-card-row.manage-user-row .action-buttons-cell {
+    justify-content: flex-start;
+  }
+}

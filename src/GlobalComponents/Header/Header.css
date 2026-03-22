@@ -25,10 +25,12 @@
   border: 1px solid #a71a2b;
   background: #a71a2b;
   color: white;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 6px;
   font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,7 +45,7 @@
 }
 
 .brand img {
-  width: 2rem;
+  width: 2.5rem;
   height: auto;
 }
 
@@ -90,18 +92,28 @@
 .username {
   font-weight: 700;
   color: #1b1b1b;
-  max-width: 120px;
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .role {
-  font-size: 0.7rem;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  max-width: 120px;
+  font-size: 0.72rem;
+  color: #555;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email-line {
+  font-size: 0.68rem;
+  color: #888;
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -133,15 +145,21 @@
     gap: 0.5rem;
   }
   .username {
-    max-width: 80px;
+    max-width: 140px;
   }
   .role {
-    max-width: 80px;
+    max-width: 140px;
+  }
+  .user-email-line {
+    max-width: 140px;
   }
 }
 
 @media (max-width: 640px) {
   .username {
+    max-width: 100px;
+  }
+  .user-email-line {
     display: none;
   }
   .role {

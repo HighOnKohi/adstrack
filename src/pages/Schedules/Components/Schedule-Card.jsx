@@ -361,14 +361,7 @@ function ScheduleCard({ meeting, onUpdate }) {
 
               <div className="sched-input-group">
                 <label className="input-label">Status</label>
-                <div
-                  className="sched-input"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#f8f9fa",
-                  }}
-                >
+                <div className="sched-status-display">
                   <span
                     className={`status-pill ${(meeting.Status || "Pending").toLowerCase()}`}
                   >
@@ -535,7 +528,7 @@ function ScheduleCard({ meeting, onUpdate }) {
                 <label className="input-label">Status</label>
                 <select
                   name="Status"
-                  className="sched-input"
+                  className="sched-input sched-status-select"
                   value={editFormData.Status}
                   onChange={handleChange}
                 >

@@ -397,7 +397,7 @@ function Inventory() {
               </div>
             )}
           </div>
-          <div>ACTIONS</div>
+          <div aria-hidden="true" />
         </div>
 
         <div className="inventory-table-body">

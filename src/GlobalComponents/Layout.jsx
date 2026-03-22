@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import Sidebar from "./Sidebar/Sidebar.jsx";
 import Header from "./Header/Header.jsx";
+import { NotificationsProvider } from "../context/AppNotificationsContext.jsx";
 import "./Layout.css";
 
 function Layout() {
@@ -12,6 +13,7 @@ function Layout() {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
+    <NotificationsProvider>
     <div className="layout">
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
@@ -22,6 +24,7 @@ function Layout() {
         </div>
       </main>
     </div>
+    </NotificationsProvider>
   );
 }
 

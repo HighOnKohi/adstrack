@@ -9,7 +9,7 @@ function InventoryTable({ items, onEdit, onDelete }) {
         <div>CATEGORY</div>
         <div>QUANTITY</div>
         <div>STATUS</div>
-        <div>ACTIONS</div>
+        <div aria-hidden="true" />
       </div>
 
       <div className="inventory-table-body">

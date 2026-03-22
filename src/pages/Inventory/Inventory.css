@@ -5,7 +5,7 @@
   padding: 16px 2%;
   width: 100%;
   gap: 1rem;
-  background: #f7f8fb;
+  background: #f1f3f4;
 }
 
 .inventory-label h1 {
@@ -80,10 +80,22 @@
   background: #8f1723;
 }
 
+/* Match Schedules .function-buttons button (e.g. Print): normal weight, sentence case */
+.inventory-add-button {
+  font-weight: 400;
+  text-transform: none;
+  gap: 0.5rem;
+}
+
 .inventory-table {
   width: 100%;
   margin-top: 0.65rem;
   overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: min(48vh, 440px);
+  background-color: #f1f3f4;
 }
 
 .inventory-table-header,
@@ -92,20 +104,42 @@
   grid-template-columns: 1.1fr 2.2fr 2fr 1fr 1fr 1.2fr;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.85rem 0.9rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
   min-width: 900px;
 }
 
 .inventory-table-header {
+  flex-shrink: 0;
   background: #a71a2b;
   color: #fff;
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  height: 40px;
-  padding-bottom: 20px;
+  min-height: 44px;
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
+.inventory-row {
+  min-height: 48px;
+  height: auto;
+}
+
+.inventory-table-header > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100%;
+}
+
+.inventory-label-cell-filter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100%;
 }
 
 .inventory-table-header div,
@@ -120,11 +154,11 @@
   gap: 0.3rem;
   background: transparent;
   border: none;
-  padding: 0.4rem;
+  padding: 0.25rem 0.35rem;
   cursor: pointer;
   color: #fff;
   font: inherit;
-  height: 1px;
+  min-height: 0;
   touch-action: manipulation;
 }
 
@@ -160,15 +194,21 @@
   background: #f1f4f8;
 }
 
-.inventory-label-cell-filter {
-  position: relative;
+.inventory-table-header > div:last-child {
+  justify-content: flex-end;
 }
 
 .inventory-table-body {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.35rem;
   margin-top: 0.35rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background-color: #f1f3f4;
 }
 
 .inventory-row {
@@ -182,7 +222,16 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.28rem;
+}
+
+.inventory-row-actions .inventory-action-btn {
+  padding: 0.35rem 0.55rem;
+  min-height: 32px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 8px;
+  gap: 0.3rem;
 }
 
 .inventory-filters {
@@ -214,13 +263,13 @@
   font-size: 0.95rem;
 }
 
+/* Row + toolbar icons: larger, white on maroon buttons */
 .inventory-action-btn img,
-.inventory-add-button img,
-.inventory-modal-close img,
-.inventory-modal-submit img {
-  width: 14px;
-  height: 14px;
-  filter: brightness(0);
+.inventory-add-button img {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
 }
 
 .inventory-status-badge {
@@ -255,7 +304,7 @@
 
 .status-unknown {
   color: #555;
-  background: #f7f7f7;
+  background: #eceff1;
 }
 
 .inventory-empty-state,
@@ -342,11 +391,17 @@
 .inventory-modal-close:focus,
 .inventory-modal-close:focus-visible {
   outline: none;
-  background-color: #E8E8E8;
+  background-color: #e8e8e8;
 }
 
 .inventory-modal-close:active {
-  background-color: #DCDCDC;
+  background-color: #dcdcdc;
+}
+
+.inventory-modal-close img {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0);
 }
 
 .inventory-modal-form {
@@ -387,6 +442,13 @@
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
+}
+
+.inventory-modal-submit img {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
 }
 
 * {
@@ -494,10 +556,19 @@ h6 {
   }
 
   .inventory-action-btn img,
-  .inventory-add-button img,
+  .inventory-add-button img {
+    width: 16px;
+    height: 16px;
+  }
+
   .inventory-modal-close img {
     width: 12px;
     height: 12px;
+  }
+
+  .inventory-modal-submit img {
+    width: 1.15rem;
+    height: 1.15rem;
   }
 
   .inventory-filter-dropdown {
@@ -546,7 +617,7 @@ h6 {
   }
 
   .inventory-row-actions {
-    width: 100%;
+    width: 10%;
     margin-top: 0.4rem;
   }
 

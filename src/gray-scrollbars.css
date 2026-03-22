@@ -1,0 +1,70 @@
+/*
+ * Inventory + Schedules: thin gray thumb, track matches page background, no arrows.
+ */
+.inventory-table,
+.inventory-table-body {
+  scrollbar-width: thin;
+  scrollbar-color: #9a9a9a #f1f3f4;
+}
+
+.schedule-list-container,
+.main {
+  scrollbar-width: thin;
+  scrollbar-color: #9a9a9a #f1f3f4;
+}
+
+.inventory-table::-webkit-scrollbar,
+.inventory-table-body::-webkit-scrollbar,
+.schedule-list-container::-webkit-scrollbar,
+.main::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.inventory-table::-webkit-scrollbar-button,
+.inventory-table-body::-webkit-scrollbar-button,
+.schedule-list-container::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.main::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.inventory-table::-webkit-scrollbar-track,
+.inventory-table-body::-webkit-scrollbar-track {
+  background: #f1f3f4;
+}
+
+.schedule-list-container::-webkit-scrollbar-track,
+.main::-webkit-scrollbar-track {
+  background: #f1f3f4;
+}
+
+.inventory-table::-webkit-scrollbar-thumb,
+.inventory-table-body::-webkit-scrollbar-thumb,
+.schedule-list-container::-webkit-scrollbar-thumb,
+.main::-webkit-scrollbar-thumb {
+  background-color: #9a9a9a;
+  border-radius: 6px;
+}
+
+.inventory-table::-webkit-scrollbar-thumb:hover,
+.inventory-table-body::-webkit-scrollbar-thumb:hover,
+.schedule-list-container::-webkit-scrollbar-thumb:hover,
+.main::-webkit-scrollbar-thumb:hover {
+  background-color: #7a7a7a;
+}
+
+.inventory-table::-webkit-scrollbar-corner,
+.inventory-table-body::-webkit-scrollbar-corner,
+.schedule-list-container::-webkit-scrollbar-corner,
+.main::-webkit-scrollbar-corner {
+  background: transparent;
+}

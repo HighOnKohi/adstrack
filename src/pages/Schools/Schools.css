@@ -296,13 +296,19 @@ body {
     text-overflow: ellipsis;
 }
 
+.school-card-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding: 0 0 14px 0;
+}
+
 .school-card-footer-divider {
-    margin-top: 40px;
+    margin-top: 0;
     margin-left: 20px;
     height: 2px;
     width: 80%;
     background-color: #c4c4c48b;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .school-card-view-details-button {
@@ -366,6 +372,47 @@ body {
 
 .school-detail-item:last-child {
     margin-bottom: 0;
+}
+
+.school-detail-item-tight {
+    margin-bottom: 0;
+}
+
+.school-enrollment-years {
+    display: flex;
+    flex-direction: column;
+}
+
+.school-enrollment-year-row-divided {
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.school-enrollment-total-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+    padding-top: 0.85rem;
+    border-top: 2px solid #e0e0e0;
+}
+
+.school-enrollment-total-value {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.school-detail-section-meetings {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e8e8e8;
+}
+
+.school-meeting-accomplished-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }
 
 .school-detail-label {
@@ -445,10 +492,12 @@ body {
     outline: none;
 }
 
-/* ---- Card face fade ---- */
+/* ---- Card face fade: both faces fill body so footer stays aligned ---- */
 .school-card-body {
     position: relative;
-    min-height: 150px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .school-card-face {
@@ -456,16 +505,17 @@ body {
     opacity: 0;
     pointer-events: none;
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .school-card-face.active {
     opacity: 1;
     pointer-events: auto;
-    position: relative;
 }
 
 /* ---- Stats summary on card ---- */
@@ -474,6 +524,44 @@ body {
     flex-direction: column;
     gap: 0.35rem;
     padding: 0 20px 0 20px;
+    flex: 1;
+    min-height: 0;
+}
+
+.school-stats-summary-compact {
+    gap: 0.65rem;
+    padding-top: 0.25rem;
+}
+
+.school-stats-inline-divider {
+    border: none;
+    border-top: 1px solid #dcdcdc;
+    margin: 0.15rem 0 0.2rem 0;
+    width: 100%;
+    height: 0;
+}
+
+.school-stats-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-align: left;
+}
+
+.school-stats-metric-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.3;
+}
+
+.school-stats-metric-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-variant-numeric: tabular-nums;
 }
 
 .school-stats-row {
