@@ -1,0 +1,98 @@
+.audit-trail-modal {
+  max-width: 500px;
+  width: min(92vw, 500px);
+}
+
+.audit-trail-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.audit-trail-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.audit-trail-loading,
+.audit-trail-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+  font-size: 0.95rem;
+}
+
+.audit-trail-entry {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+}
+
+.audit-trail-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.audit-trail-icon img {
+  width: 16px;
+  height: 16px;
+}
+
+.audit-trail-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.audit-trail-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.audit-trail-action-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.audit-trail-qty {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.audit-trail-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.audit-trail-meta span::after {
+  content: "•";
+  margin-left: 0.5rem;
+  color: #ccc;
+}
+
+.audit-trail-meta span:last-child::after {
+  content: "";
+}
+
+.audit-trail-time {
+  font-size: 0.72rem;
+  color: #aaa;
+}

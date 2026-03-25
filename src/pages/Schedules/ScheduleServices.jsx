@@ -34,6 +34,8 @@ export const useScheduleForm = (onSuccess) => {
     return {
       School_ID: "",
       Level: "",
+      Type: "Meeting",
+      Type_Other: "",
       Companions: "1",
       Attendee_Est: "40",
       Date_Contract: formatDate(now),
@@ -87,22 +89,40 @@ export const useScheduleForm = (onSuccess) => {
     if (
       !formData.School_ID ||
       !formData.Level ||
+      !formData.Type ||
       !formData.Companions ||
       !formData.Schedule_Date
     ) {
-      return { success: false, error: "Please complete details" };
+      return {
+        success: false,
+        error:
+          "Please fill in all required fields (School, Level, Type, Companions, and Schedule Date) before submitting.",
+      };
+    }
+
+    if (formData.Type === "Others" && !formData.Type_Other.trim()) {
+      return {
+        success: false,
+        error:
+          'You selected "Others" as the schedule type. Please specify the type in the text field provided.',
+      };
     }
 
     const companions = parseInt(formData.Companions, 10);
     if (companions > 10) {
-      return { success: false, error: "Companion count cannot exceed 10." };
+      return {
+        success: false,
+        error:
+          "Companion count cannot exceed 10. Each schedule allows a maximum of 10 companions for logistical reasons.",
+      };
     }
 
     const attendees = parseInt(formData.Attendee_Est, 10);
     if (formData.Attendee_Est && (attendees < 30 || attendees > 100)) {
       return {
         success: false,
-        error: "Estimated attendees must be between 30 and 100.",
+        error:
+          "Estimated attendees must be between 30 and 100. This range ensures a manageable audience size for career talks.",
       };
     }
 
@@ -110,7 +130,8 @@ export const useScheduleForm = (onSuccess) => {
     if (isNaN(newTime)) {
       return {
         success: false,
-        error: "Please enter a valid schedule date and time.",
+        error:
+          "The schedule date and time you entered is not valid. Please select a date and time using the date picker.",
       };
     }
 
@@ -119,7 +140,8 @@ export const useScheduleForm = (onSuccess) => {
     if (scheduleHours < 6 || scheduleHours >= 18) {
       return {
         success: false,
-        error: "Schedule time must be between 6:00 AM and 6:00 PM.",
+        error:
+          "Schedule time must be between 6:00 AM and 6:00 PM. Visits outside of school operating hours are not allowed.",
       };
     }
 
@@ -132,7 +154,8 @@ export const useScheduleForm = (onSuccess) => {
       if (scheduleTime < contractTime) {
         return {
           success: false,
-          error: "Schedule Date cannot be before Date of Contract.",
+          error:
+            "The Schedule Date cannot be earlier than the Date of Contract. The visit must occur after the contract has been signed.",
         };
       }
     }
@@ -150,7 +173,7 @@ export const useScheduleForm = (onSuccess) => {
         return {
           success: false,
           error:
-            "Estimated Time of Departure must be at least 1 hour after Schedule Date & Time.",
+            "The Estimated Time of Departure must be at least 1 hour after the Schedule Date & Time. This ensures sufficient time for the career talk session.",
         };
       }
 
@@ -158,7 +181,7 @@ export const useScheduleForm = (onSuccess) => {
         return {
           success: false,
           error:
-            "Estimated Time of Departure cannot be before Date of Contract.",
+            "The Estimated Time of Departure cannot be earlier than the Date of Contract. Please verify your dates are in the correct order.",
         };
       }
     }
@@ -193,7 +216,8 @@ export const useScheduleForm = (onSuccess) => {
       if (conflict) {
         return {
           success: false,
-          error: "Schedules must have at least a 1-hour interval between them.",
+          error:
+            "There is already a schedule within 1 hour of this time slot. Schedules must have at least a 1-hour gap between them to allow for travel and preparation.",
         };
       }
       const timestamp = new Date();
@@ -209,7 +233,11 @@ export const useScheduleForm = (onSuccess) => {
       return { success: true, message: "Schedule Registered Successfully" };
     } catch (e) {
       console.error("Error adding document: ", e);
-      return { success: false, error: "Error registering schedule" };
+      return {
+        success: false,
+        error:
+          "Failed to save the schedule to the database. This may be caused by a network issue or insufficient permissions. Please check your internet connection and try again.",
+      };
     }
   };
 

@@ -21,6 +21,14 @@ const DATE_FILTER_OPTIONS = [
   { value: "1_year_ago", label: "1 Year ago" },
 ];
 
+const SCHEDULE_TYPES = [
+  { value: "Meeting", label: "Meeting" },
+  { value: "Advertising", label: "Advertising" },
+  { value: "Career talk", label: "Career talk" },
+  { value: "Follow-Up", label: "Follow-Up" },
+  { value: "Others", label: "Others" },
+];
+
 function getDateRangeForFilter(value) {
   if (!value) return null;
   const now = new Date();
@@ -129,10 +137,13 @@ function Schedules() {
   const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
   const [contractDropdownOpen, setContractDropdownOpen] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState("");
+  const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
   const nameFilterRef = useRef(null);
   const dateFilterRef = useRef(null);
   const contractFilterRef = useRef(null);
   const statusFilterRef = useRef(null);
+  const typeFilterRef = useRef(null);
 
   const handleSubmitWithAlert = async () => {
     const result = await handleSubmit();
@@ -159,6 +170,11 @@ function Schedules() {
         !statusFilterRef.current.contains(e.target)
       )
         setStatusDropdownOpen(false);
+      if (
+        typeFilterRef.current &&
+        !typeFilterRef.current.contains(e.target)
+      )
+        setTypeDropdownOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -218,6 +234,9 @@ function Schedules() {
       if (selectedStatusFilter && (meeting.Status || "Pending") !== selectedStatusFilter) {
           return false;
       }
+      if (selectedTypeFilter && (meeting.Type || "Meeting") !== selectedTypeFilter) {
+          return false;
+      }
       return true;
     });
 
@@ -248,6 +267,7 @@ function Schedules() {
     selectedContractFilter,
     contractRange,
     selectedStatusFilter,
+    selectedTypeFilter,
   ]);
 
   return (
@@ -320,6 +340,7 @@ function Schedules() {
                 setDateDropdownOpen(false);
                 setContractDropdownOpen(false);
                 setStatusDropdownOpen(false);
+                setTypeDropdownOpen(false);
                 setNameDropdownOpen((o) => !o);
               }}
               aria-expanded={nameDropdownOpen}
@@ -387,6 +408,7 @@ function Schedules() {
                 setNameDropdownOpen(false);
                 setDateDropdownOpen(false);
                 setStatusDropdownOpen(false);
+                setTypeDropdownOpen(false);
                 setContractDropdownOpen((o) => !o);
               }}
               aria-expanded={contractDropdownOpen}
@@ -456,6 +478,7 @@ function Schedules() {
                 setNameDropdownOpen(false);
                 setContractDropdownOpen(false);
                 setStatusDropdownOpen(false);
+                setTypeDropdownOpen(false);
                 setDateDropdownOpen((o) => !o);
               }}
               aria-expanded={dateDropdownOpen}
@@ -525,6 +548,7 @@ function Schedules() {
                 setNameDropdownOpen(false);
                 setContractDropdownOpen(false);
                 setDateDropdownOpen(false);
+                setTypeDropdownOpen(false);
                 setStatusDropdownOpen((o) => !o);
               }}
               aria-expanded={statusDropdownOpen}
@@ -572,6 +596,70 @@ function Schedules() {
                     aria-selected={selectedStatusFilter === status}
                   >
                     {status}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div
+            className="schedule-label-cell schedule-label-cell-filter"
+            ref={typeFilterRef}
+          >
+            <button
+              type="button"
+              className="schedule-label-filter-btn"
+              onClick={() => {
+                setNameDropdownOpen(false);
+                setContractDropdownOpen(false);
+                setDateDropdownOpen(false);
+                setStatusDropdownOpen(false);
+                setTypeDropdownOpen((o) => !o);
+              }}
+              aria-expanded={typeDropdownOpen}
+              aria-haspopup="listbox"
+            >
+              <span className="schedule-label-filter-text">TYPE</span>
+              {selectedTypeFilter ? (
+                <span className="schedule-label-filter-active">
+                  {" "}
+                  ({selectedTypeFilter})
+                </span>
+              ) : null}
+              <span
+                className="schedule-label-filter-chevron"
+                style={{ paddingLeft: "10px" }}
+                aria-hidden
+              >
+                ▼
+              </span>
+            </button>
+            {typeDropdownOpen && (
+              <div className="schedule-filter-dropdown" role="listbox">
+                <button
+                  type="button"
+                  className="schedule-filter-option"
+                  onClick={() => {
+                    setSelectedTypeFilter("");
+                    setTypeDropdownOpen(false);
+                  }}
+                  role="option"
+                  aria-selected={!selectedTypeFilter}
+                >
+                  All Types
+                </button>
+                {SCHEDULE_TYPES.map((type) => (
+                  <button
+                    key={type.value}
+                    type="button"
+                    className="schedule-filter-option"
+                    onClick={() => {
+                      setSelectedTypeFilter(type.value);
+                      setTypeDropdownOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={selectedTypeFilter === type.value}
+                  >
+                    {type.label}
                   </button>
                 ))}
               </div>
@@ -644,6 +732,36 @@ function Schedules() {
                   <option value="Grade School">Grade School</option>
                 </select>
               </div>
+
+              <div className="sched-input-group">
+                <label className="input-label">Type</label>
+                <select
+                  name="Type"
+                  className="sched-input"
+                  value={formData.Type}
+                  onChange={handleChange}
+                >
+                  {SCHEDULE_TYPES.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {formData.Type === "Others" && (
+                <div className="sched-input-group">
+                  <label className="input-label">Specify Type</label>
+                  <input
+                    name="Type_Other"
+                    type="text"
+                    placeholder="Specify the schedule type"
+                    className="sched-input"
+                    value={formData.Type_Other}
+                    onChange={handleChange}
+                  />
+                </div>
+              )}
 
               <div className="sched-input-group">
                 <label className="input-label">Companion Count</label>

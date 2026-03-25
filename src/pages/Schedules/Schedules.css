@@ -91,7 +91,7 @@ body {
 /* Schedules directory only: shared horizontal inset + identical grid tracks for header and rows */
 .schedules-meeting-table {
   --schedule-table-gap: 0.25rem;
-  --schedule-grid-cols: repeat(5, minmax(0, 1fr)) minmax(9.5rem, 12rem);
+  --schedule-grid-cols: repeat(6, minmax(0, 1fr)) minmax(9.5rem, 12rem);
   width: 97%;
   box-sizing: border-box;
   padding-left: var(--schedule-table-pad-x);
@@ -390,15 +390,21 @@ body {
     height: auto;
   }
 
-  .schedule-list-labels,
-  .schedule-card-row {
-    flex-wrap: wrap;
-    grid-gap: 0.5rem;
+  .schedule-list-labels {
+    display: none !important;
   }
 
-  .schedule-label-cell,
-  .schedule-card-cell {
+  .schedules-meeting-table .schedule-card-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem;
+    position: relative;
+    padding: 0.85rem;
+  }
+
+  .schedules-meeting-table .schedule-card-row .schedule-card-cell {
     min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 
@@ -736,29 +742,7 @@ body {
   .schedule-list-container {
     width: 100%;
   }
-  .schedules-meeting-table .schedule-card-row {
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
-    padding: 0.8rem 0;
-  }
-  .schedule-card-row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
-    padding: 0.8rem;
-  }
-  .schedule-card-cell {
-    flex: none;
-    width: 100%;
-    padding: 0.1rem 0;
-    text-align: left;
-  }
-  .action-buttons-cell {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 0.35rem;
-  }
+
   .sched-form {
     width: min(94vw, 600px);
   }
@@ -796,4 +780,41 @@ body {
   font-weight: 600;
   color: #333;
   margin: 0;
+}
+
+/* Type badge styles */
+.type-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.type-badge--meeting {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.type-badge--advertising {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.type-badge--others {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.type-badge--career-talk {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.type-badge--follow-up {
+  background-color: #fce4ec;
+  color: #c2185b;
 }

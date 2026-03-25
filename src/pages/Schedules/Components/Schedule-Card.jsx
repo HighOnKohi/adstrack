@@ -35,6 +35,8 @@ function ScheduleCard({ meeting, onUpdate }) {
 
   const [editFormData, setEditFormData] = useState({
     Level: meeting.Level || "",
+    Type: meeting.Type || "Meeting",
+    Type_Other: meeting.Type_Other || "",
     Companions: meeting.Companions || "",
     Attendee_Est: meeting.Attendee_Est || "",
     Date_Contract: formatForInput(meeting.Date_Contract || meeting.DoC, false),
@@ -73,7 +75,7 @@ function ScheduleCard({ meeting, onUpdate }) {
     const companions = parseInt(editFormData.Companions, 10);
     if (companions > 10) {
       showAlert(
-        "Companion count cannot exceed 10.",
+        "Companion count cannot exceed 10. Each schedule allows a maximum of 10 companions for logistical reasons.",
         "Validation Error",
         "error",
       );
@@ -83,7 +85,7 @@ function ScheduleCard({ meeting, onUpdate }) {
     const attendees = parseInt(editFormData.Attendee_Est, 10);
     if (editFormData.Attendee_Est && (attendees < 30 || attendees > 500)) {
       showAlert(
-        "Estimated attendees must be between 30 and 500.",
+        "Estimated attendees must be between 30 and 500. Please enter a realistic number for the expected audience size.",
         "Validation Error",
         "error",
       );
@@ -96,7 +98,7 @@ function ScheduleCard({ meeting, onUpdate }) {
 
       if (scheduleTime < contractTime) {
         showAlert(
-          "Schedule Date cannot be before Date of Contract.",
+          "The Schedule Date cannot be earlier than the Date of Contract. The visit must occur after the contract has been signed.",
           "Validation Error",
           "error",
         );
@@ -115,7 +117,7 @@ function ScheduleCard({ meeting, onUpdate }) {
 
       if (scheduleTime && etdTime < scheduleTime + 3600000) {
         showAlert(
-          "Estimated Time of Departure must be at least 1 hour after Schedule Date & Time.",
+          "The Estimated Time of Departure must be at least 1 hour after the Schedule Date & Time. This ensures sufficient time for the career talk session.",
           "Validation Error",
           "error",
         );
@@ -124,7 +126,7 @@ function ScheduleCard({ meeting, onUpdate }) {
 
       if (contractTime && etdTime < contractTime) {
         showAlert(
-          "Estimated Time of Departure cannot be before Date of Contract.",
+          "The Estimated Time of Departure cannot be earlier than the Date of Contract. Please verify your dates are in the correct order.",
           "Validation Error",
           "error",
         );
@@ -138,7 +140,7 @@ function ScheduleCard({ meeting, onUpdate }) {
       const scheduleHours = scheduleObj.getHours();
       if (scheduleHours < 6 || scheduleHours >= 18) {
         showAlert(
-          "Schedule time must be between 6:00 AM and 6:00 PM.",
+          "Schedule time must be between 6:00 AM and 6:00 PM. Visits outside of school operating hours are not allowed.",
           "Validation Error",
           "error",
         );
@@ -163,7 +165,7 @@ function ScheduleCard({ meeting, onUpdate }) {
 
         if (conflict) {
           showAlert(
-            "Schedules must have at least a 1-hour interval between them.",
+            "There is already a schedule within 1 hour of this time slot. Schedules must have at least a 1-hour gap between them to allow for travel and preparation.",
             "Validation Error",
             "error",
           );
@@ -187,7 +189,11 @@ function ScheduleCard({ meeting, onUpdate }) {
       showAlert("Schedule updated successfully!", "Success", "success");
     } catch (e) {
       console.error("Error updating schedule:", e);
-      showAlert("Error updating schedule", "Error", "error");
+      showAlert(
+        "Failed to update the schedule. This may be caused by a network issue or insufficient permissions. Please check your internet connection and try again.",
+        "Error",
+        "error",
+      );
     }
   };
 
@@ -203,7 +209,11 @@ function ScheduleCard({ meeting, onUpdate }) {
             showAlert("Schedule deleted successfully", "Success", "success");
           } catch (e) {
             console.error("Error deleting schedule: ", e);
-            showAlert("Error deleting schedule", "Error", "error");
+            showAlert(
+              "Failed to delete the schedule. This may be caused by a network issue or insufficient permissions. Please check your internet connection and try again.",
+              "Error",
+              "error",
+            );
           }
         }
       },
@@ -272,6 +282,16 @@ function ScheduleCard({ meeting, onUpdate }) {
             {meeting.Status || "Pending"}
           </span>
         </div>
+        <div className="schedule-card-cell">
+          <span
+            className={`type-badge type-badge--${(meeting.Type || "Meeting").toLowerCase().replace(/\s+/g, '-')}`}
+          >
+            {meeting.Type === "Others"
+              ? meeting.Type_Other || "Others"
+              : meeting.Type || "Meeting"}
+          </span>
+        </div>
+
         <div
           className="schedule-card-cell action-buttons-cell"
           onClick={(e) => e.stopPropagation()}
@@ -371,6 +391,19 @@ function ScheduleCard({ meeting, onUpdate }) {
               </div>
 
               <div className="sched-input-group">
+                <label className="input-label">Type</label>
+                <div className="sched-status-display">
+                  <span
+                    className={`type-badge type-badge--${(meeting.Type || "Meeting").toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    {meeting.Type === "Others"
+                      ? meeting.Type_Other || "Others"
+                      : meeting.Type || "Meeting"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="sched-input-group">
                 <label className="input-label">Date of Contract</label>
                 <input
                   type="text"
@@ -462,6 +495,36 @@ function ScheduleCard({ meeting, onUpdate }) {
                   <option value="Grade School"> Grade School </option>
                 </select>
               </div>
+
+              <div className="sched-input-group">
+                <label className="input-label">Type</label>
+                <select
+                  name="Type"
+                  className="sched-input"
+                  value={editFormData.Type}
+                  onChange={handleChange}
+                >
+                  <option value="Meeting">Meeting</option>
+                  <option value="Advertising">Advertising</option>
+                  <option value="Career talk">Career talk</option>
+                  <option value="Follow-Up">Follow-Up</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+
+              {editFormData.Type === "Others" && (
+                <div className="sched-input-group">
+                  <label className="input-label">Specify Type</label>
+                  <input
+                    name="Type_Other"
+                    type="text"
+                    placeholder="Specify the schedule type"
+                    className="sched-input"
+                    value={editFormData.Type_Other}
+                    onChange={handleChange}
+                  />
+                </div>
+              )}
 
               <div className="sched-input-group">
                 <label className="input-label">Companion Count</label>

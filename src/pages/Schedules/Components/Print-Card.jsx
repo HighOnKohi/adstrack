@@ -112,9 +112,12 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
   const [nameDropdownOpen, setNameDropdownOpen] = useState(false);
   const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
   const [contractDropdownOpen, setContractDropdownOpen] = useState(false);
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState("Done");
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const nameFilterRef = useRef(null);
   const dateFilterRef = useRef(null);
   const contractFilterRef = useRef(null);
+  const statusFilterRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -127,6 +130,11 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
         !contractFilterRef.current.contains(e.target)
       )
         setContractDropdownOpen(false);
+      if (
+        statusFilterRef.current &&
+        !statusFilterRef.current.contains(e.target)
+      )
+        setStatusDropdownOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -152,6 +160,9 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
         const d = getDateOfContract(meeting);
         if (!d || d < contractRange.start || d > contractRange.end)
           return false;
+      }
+      if (selectedStatusFilter && (meeting.Status || "Pending") !== selectedStatusFilter) {
+        return false;
       }
       return true;
     });
@@ -182,6 +193,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
     dateRange,
     selectedContractFilter,
     contractRange,
+    selectedStatusFilter,
   ]);
 
   const fetchSchoolData = async (schoolId) => {
@@ -381,7 +393,11 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
     } catch (error) {
       console.error("Error generating PDF:", error);
       setIsGenerating(false);
-      showAlert("Error generating PDF. Please try again.", "Error", "error");
+      showAlert(
+        "Failed to generate the PDF. This may be caused by rendering issues or insufficient browser resources. Please try selecting fewer schedules or refreshing the page.",
+        "Error",
+        "error",
+      );
     }
   };
 
@@ -427,6 +443,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                 onClick={() => {
                   setDateDropdownOpen(false);
                   setContractDropdownOpen(false);
+                  setStatusDropdownOpen(false);
                   setNameDropdownOpen((o) => !o);
                 }}
                 aria-expanded={nameDropdownOpen}
@@ -493,6 +510,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                 onClick={() => {
                   setNameDropdownOpen(false);
                   setDateDropdownOpen(false);
+                  setStatusDropdownOpen(false);
                   setContractDropdownOpen((o) => !o);
                 }}
                 aria-expanded={contractDropdownOpen}
@@ -559,6 +577,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                 onClick={() => {
                   setNameDropdownOpen(false);
                   setContractDropdownOpen(false);
+                  setStatusDropdownOpen(false);
                   setDateDropdownOpen((o) => !o);
                 }}
                 aria-expanded={dateDropdownOpen}
@@ -615,8 +634,66 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                 </div>
               )}
             </div>
-            <div className="print-form-filter-cell print-form-filter-cell--label">
-              STATUS
+            <div
+              className="print-form-filter-cell schedule-label-cell-filter"
+              ref={statusFilterRef}
+            >
+              <button
+                type="button"
+                className="schedule-label-filter-btn"
+                onClick={() => {
+                  setNameDropdownOpen(false);
+                  setDateDropdownOpen(false);
+                  setContractDropdownOpen(false);
+                  setStatusDropdownOpen((o) => !o);
+                }}
+                aria-expanded={statusDropdownOpen}
+                aria-haspopup="listbox"
+              >
+                <span className="schedule-label-filter-text-group">
+                  <span className="schedule-label-filter-text">STATUS</span>
+                  {selectedStatusFilter ? (
+                    <span className="schedule-label-filter-active">
+                      {" "}
+                      ({selectedStatusFilter})
+                    </span>
+                  ) : null}
+                </span>
+                <span className="schedule-label-filter-chevron" aria-hidden>
+                  ▼
+                </span>
+              </button>
+              {statusDropdownOpen && (
+                <div className="schedule-filter-dropdown" role="listbox">
+                  <button
+                    type="button"
+                    className="schedule-filter-option"
+                    onClick={() => {
+                      setSelectedStatusFilter("");
+                      setStatusDropdownOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={!selectedStatusFilter}
+                  >
+                    All Statuses
+                  </button>
+                  {["Pending", "Confirmed", "Done"].map((status) => (
+                    <button
+                      key={status}
+                      type="button"
+                      className="schedule-filter-option"
+                      onClick={() => {
+                        setSelectedStatusFilter(status);
+                        setStatusDropdownOpen(false);
+                      }}
+                      role="option"
+                      aria-selected={selectedStatusFilter === status}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

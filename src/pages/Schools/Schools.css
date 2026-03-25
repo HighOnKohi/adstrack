@@ -47,7 +47,7 @@ body {
     z-index: 1000;
 }
 
-.school-form{
+.school-form {
     position: relative;
     background-color: #EFEFEF;
     display: flex;
@@ -73,8 +73,8 @@ body {
     box-shadow: black;
     outline: none;
     box-shadow:
-            0 4px 6px rgba(0, 0, 0, 0.05),
-            0 10px 20px rgba(0, 0, 0, 0.08);
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 .close-modal-button {
@@ -126,11 +126,30 @@ body {
 }
 
 @media (max-width: 700px) {
-    .school-form-grid { grid-template-columns: 1fr; }
-    .school-submit, .register-school-button { width: 100%; max-width: none; padding: 0.6rem 1rem; }
-    .school-card { width: 100%; max-width: 360px; }
-    .school-card-container { width: 100%; gap: 1rem; }
-    .school-detail-modal { width: min(95vw, 520px); }
+    .school-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .school-submit,
+    .register-school-button {
+        width: 100%;
+        max-width: none;
+        padding: 0.6rem 1rem;
+    }
+
+    .school-card {
+        width: 100%;
+        max-width: 360px;
+    }
+
+    .school-card-container {
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .school-detail-modal {
+        width: min(95vw, 520px);
+    }
 }
 
 .school-input-group {
@@ -174,52 +193,52 @@ body {
 
 @media (max-width: 980px) {
     .school-card-container {
-      justify-content: center;
-      width: 100%;
+        justify-content: center;
+        width: 100%;
     }
 
     .school-card {
-      width: min(100%, 360px);
-      margin: 0 auto;
+        width: min(100%, 360px);
+        margin: 0 auto;
     }
 
     .school-form {
-      width: min(95vw, 480px);
+        width: min(95vw, 480px);
     }
 
     .school-form-grid {
-      grid-template-columns: 1fr;
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 640px) {
     .Label h1 {
-      font-size: 1.6rem;
+        font-size: 1.6rem;
     }
 
     .Label p {
-      font-size: 0.9rem;
+        font-size: 0.9rem;
     }
 
     .school-card {
-      width: 100%;
-      max-width: none;
+        width: 100%;
+        max-width: none;
     }
 
     .school-card-container {
-      gap: 1rem;
-      padding: 0.25rem;
+        gap: 1rem;
+        padding: 0.25rem;
     }
 
     .school-card-body h1 {
-      font-size: 1.35rem;
+        font-size: 1.35rem;
     }
 
     .school-submit,
     .register-school-button {
-      width: 100%;
-      min-width: 0;
-      padding: 0.8rem;
+        width: 100%;
+        min-width: 0;
+        padding: 0.8rem;
     }
 }
 
@@ -277,12 +296,13 @@ body {
     padding-left: 20px;
     padding-right: 23px;
     font-size: 21px;
-    color:#222222;
+    color: #222222;
     min-height: 50px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
@@ -290,7 +310,7 @@ body {
     font-weight: 400;
     padding-left: 20px;
     padding-right: 23px;
-    color:#787878;
+    color: #787878;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -313,7 +333,7 @@ body {
 
 .school-card-view-details-button {
     margin-left: 20px;
-    color:#A71A2B;
+    color: #A71A2B;
     font-weight: 600;
 }
 
@@ -339,7 +359,7 @@ body {
     font-size: 30px;
     margin-right: 20px;
     margin: 0 0 1.5rem 0;
-    color:#222222;
+    color: #222222;
     font-family: "DM Serif Display", serif;
 }
 
@@ -466,7 +486,7 @@ body {
 }
 
 .manage-stats-button {
-    background-color: #8A1524;
+    background-color: #a71a2b;
     color: white;
     font-weight: 400;
     width: fit-content;
@@ -480,11 +500,11 @@ body {
 }
 
 .manage-stats-button:hover {
-    background-color: #6E111D;
+    background-color: #8A1524;
 }
 
 .manage-stats-button.active {
-    background-color: #8A1524;
+    background-color: #6E111D;
 }
 
 .manage-stats-button:focus,

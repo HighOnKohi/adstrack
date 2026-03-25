@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { addIcon, closeIcon } from "../../../assets/Icons/index.js";
 
 function AddItemModal({
@@ -8,6 +8,7 @@ function AddItemModal({
   initialData = { id: "", name: "", category: "", quantity: "" },
   title = "Add Inventory Item",
   submitLabel = "Add Item",
+  categories = [],
 }) {
   const [form, setForm] = useState(initialData);
   const [error, setError] = useState("");
@@ -76,8 +77,8 @@ function AddItemModal({
             <input
               type="text"
               value={form.id}
-              onChange={(e) => handleChange("id", e.target.value)}
-              placeholder="Optional item code"
+              disabled
+              placeholder="Auto-generated item code"
             />
           </label>
 
@@ -94,13 +95,20 @@ function AddItemModal({
 
           <label>
             Category
-            <input
-              type="text"
+            <select
               value={form.category}
               onChange={(e) => handleChange("category", e.target.value)}
-              placeholder="Enter category"
               required
-            />
+            >
+              <option value="" disabled>
+                Select category
+              </option>
+              {categories.map((cat) => (
+                <option key={cat.docId} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>

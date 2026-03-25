@@ -1,4 +1,5 @@
 import Card from "./Components/Card";
+import ScheduleSummary from "./Components/ScheduleSummary";
 
 import "./Homepage.css";
 
@@ -8,12 +9,11 @@ export default function Homepage() {
       <div>
         <div className="Label">
           <h1> Home </h1>
-          <p>
-            View the school's mission, vision, and objectives at a glance.
-          </p>
+          <p>View the school's mission, vision, and objectives at a glance.</p>
         </div>
       </div>
 
+      <ScheduleSummary />
       <div className="card-grid">
         <Card
           title="MISSION"

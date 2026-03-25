@@ -13,20 +13,80 @@
   .schedule-card-row {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.4rem;
+    gap: 0.5rem;
+    position: relative;
+    padding: 0.85rem;
   }
+
   .schedule-card-cell {
     width: 100%;
-  }
-  .action-buttons-cell {
+    padding: 0.15rem 0;
     justify-content: flex-start;
+    text-align: left;
+  }
+
+  .schedule-card-cell::before {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 2px;
+  }
+
+  .schedule-card-cell:nth-child(1)::before {
+    content: "School Name";
+  }
+
+  .schedule-card-cell:nth-child(2)::before {
+    content: "Address";
+  }
+
+  .schedule-card-cell:nth-child(3)::before {
+    content: "Date of Contract";
+  }
+
+  .schedule-card-cell:nth-child(4)::before {
+    content: "Schedule Date";
+  }
+
+  .schedule-card-cell:nth-child(5)::before {
+    content: "Status";
+  }
+
+  .schedule-card-cell:nth-child(6)::before {
+    content: "Type";
+  }
+
+  .action-buttons-cell {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    margin-top: 0.35rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eee;
+  }
+
+  .action-buttons-cell::before {
+    display: none !important;
+  }
+
+  .action-button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
   }
 }
 
 @media (max-width: 640px) {
   .action-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    flex: 1;
+    justify-content: center;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  
+  .action-buttons-cell {
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 }
 

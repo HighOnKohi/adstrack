@@ -4,6 +4,14 @@ import { collection, getDocs } from "firebase/firestore";
 import { closeIcon } from "../../assets/Icons/index.js";
 import "./Calendar.css";
 
+const TYPE_COLORS = {
+  Meeting: { bg: "#2e7d32", light: "#e8f5e9", text: "#2e7d32" },
+  Advertising: { bg: "#f9a825", light: "#fff8e1", text: "#f57f17" },
+  "Career talk": { bg: "#1565c0", light: "#e3f2fd", text: "#1565c0" },
+  "Follow-Up": { bg: "#c2185b", light: "#fce4ec", text: "#c2185b" },
+  Others: { bg: "#c62828", light: "#ffebee", text: "#c62828" },
+};
+
 function getScheduleDate(meeting) {
   const raw = meeting.Schedule_Date || meeting.DoC;
   if (!raw) return null;
@@ -27,6 +35,7 @@ const MonthGrid = ({
   onDayClick,
   onDayMouseEnter,
   onDayMouseLeave,
+  typeFilters,
 }) => {
   const monthLabel = new Date(year, month).toLocaleString("default", {
     month: "long",
@@ -55,9 +64,12 @@ const MonthGrid = ({
     return c;
   }, [year, month]);
 
-  const hasMeetings = (y, m, d) => {
+  const getDayMeetingTypes = (y, m, d) => {
     const key = `${y}-${m}-${d}`;
-    return meetingsByDay[key] && meetingsByDay[key].length > 0;
+    const meetings = meetingsByDay[key];
+    if (!meetings || meetings.length === 0) return [];
+    const types = [...new Set(meetings.map((mt) => mt.Type || "Meeting"))];
+    return types.filter((t) => typeFilters[t] !== false);
   };
 
   const isToday = (y, m, d) => {
@@ -90,21 +102,44 @@ const MonthGrid = ({
               />
             );
           }
-          const withMeeting = hasMeetings(cell.year, cell.month, cell.day);
+          const dayTypes = getDayMeetingTypes(cell.year, cell.month, cell.day);
+          const hasMeetings = dayTypes.length > 0;
           const isCurrentDay = isToday(cell.year, cell.month, cell.day);
+
+          // Determine background: single type = that color, multiple = default with dots
+          let cellStyle = {};
+          let singleType = null;
+          if (dayTypes.length === 1) {
+            singleType = dayTypes[0];
+            const color = TYPE_COLORS[singleType] || TYPE_COLORS.Meeting;
+            cellStyle = { backgroundColor: color.bg, color: "white", borderColor: color.bg };
+          }
+
           return (
             <button
               key={cell.key}
               type="button"
-              className={`calendar-cell calendar-cell--day ${withMeeting ? "calendar-cell--has-meeting" : ""} ${isCurrentDay ? "calendar-cell--today" : ""}`}
+              className={`calendar-cell calendar-cell--day ${isCurrentDay ? "calendar-cell--today" : ""}`}
+              style={singleType ? cellStyle : undefined}
               onClick={() => onDayClick(cell.year, cell.month, cell.day)}
               onMouseEnter={() =>
                 onDayMouseEnter(cell.year, cell.month, cell.day)
               }
               onMouseLeave={onDayMouseLeave}
-              aria-label={`${cell.day} ${monthLabel}${withMeeting ? ", has scheduled meetings" : ""}${isCurrentDay ? ", today" : ""}`}
+              aria-label={`${cell.day} ${monthLabel}${hasMeetings ? ", has scheduled meetings" : ""}${isCurrentDay ? ", today" : ""}`}
             >
               {cell.day}
+              {dayTypes.length > 1 && (
+                <span className="calendar-type-dots">
+                  {dayTypes.map((t) => (
+                    <span
+                      key={t}
+                      className="calendar-type-dot"
+                      style={{ backgroundColor: (TYPE_COLORS[t] || TYPE_COLORS.Meeting).bg }}
+                    />
+                  ))}
+                </span>
+              )}
             </button>
           );
         })}
@@ -123,6 +158,13 @@ function Calendar() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDayDetail, setShowDayDetail] = useState(false);
   const [popupPosition, setPopupPosition] = useState(null);
+  const [typeFilters, setTypeFilters] = useState({
+    Meeting: true,
+    Advertising: true,
+    "Career talk": true,
+    "Follow-Up": true,
+    Others: true,
+  });
   const hoverTimeoutRef = useRef(null);
   const enterTimeoutRef = useRef(null);
 
@@ -233,17 +275,41 @@ function Calendar() {
     }
   };
 
+  const toggleTypeFilter = (type) => {
+    setTypeFilters((prev) => ({ ...prev, [type]: !prev[type] }));
+  };
+
   const selectedDayMeetings = useMemo(() => {
     if (!selectedDate) return [];
     const key = `${selectedDate.year}-${selectedDate.month}-${selectedDate.day}`;
-    return meetingsByDay[key] || [];
-  }, [selectedDate, meetingsByDay]);
+    const dayMeetings = meetingsByDay[key] || [];
+    return dayMeetings.filter((m) => typeFilters[m.Type || "Meeting"] !== false);
+  }, [selectedDate, meetingsByDay, typeFilters]);
 
   return (
     <div className="calendar-content">
       <div className="Label">
         <h1>Calendar</h1>
         <p>Click a day to see its scheduled meetings.</p>
+      </div>
+
+      {/* Legend & Type Filters */}
+      <div className="calendar-legend">
+        {Object.entries(TYPE_COLORS).map(([type, colors]) => (
+          <button
+            key={type}
+            type="button"
+            className={`calendar-legend-item ${typeFilters[type] ? "active" : "inactive"}`}
+            onClick={() => toggleTypeFilter(type)}
+            aria-pressed={typeFilters[type]}
+          >
+            <span
+              className="calendar-legend-dot"
+              style={{ backgroundColor: colors.bg }}
+            />
+            <span className="calendar-legend-label">{type}</span>
+          </button>
+        ))}
       </div>
 
       <div className="calendar-wrap">
@@ -276,6 +342,7 @@ function Calendar() {
               onDayClick={handleDayClick}
               onDayMouseEnter={handleDayMouseEnter}
               onDayMouseLeave={handleDayMouseLeave}
+              typeFilters={typeFilters}
             />
           ))}
         </div>
@@ -334,6 +401,8 @@ function Calendar() {
               <ul className="calendar-day-list">
                 {selectedDayMeetings.map((m) => {
                   const school = schools.find((s) => s.id === m.School_ID);
+                  const meetingType = m.Type || "Meeting";
+                  const typeColor = TYPE_COLORS[meetingType] || TYPE_COLORS.Meeting;
                   return (
                     <li key={m.id} className="calendar-day-item">
                       <span className="calendar-day-item-time">
@@ -345,6 +414,17 @@ function Calendar() {
                           className={`status-pill ${(m.Status || "Pending").toLowerCase()}`}
                         >
                           {m.Status || "Pending"}
+                        </span>
+                        <span
+                          className="calendar-day-type-badge"
+                          style={{
+                            backgroundColor: typeColor.light,
+                            color: typeColor.text,
+                          }}
+                        >
+                          {meetingType === "Others"
+                            ? m.Type_Other || "Others"
+                            : meetingType}
                         </span>
                       </span>
                     </li>

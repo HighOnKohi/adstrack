@@ -1,0 +1,86 @@
+.schedule-summary {
+  margin-top: 2rem;
+}
+
+.schedule-summary-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.schedule-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.schedule-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 1.25rem 1rem;
+  border-radius: 0.875rem;
+  border: 1px solid transparent;
+  background: white;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    0 6px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.schedule-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.schedule-summary-card--total {
+  background: #f5f5f5;
+  border-color: #ddd;
+}
+
+.schedule-summary-emoji {
+  font-size: 1.5rem;
+}
+
+.schedule-summary-emoji img {
+  width: 20px;
+  height: 20px;
+}
+
+.schedule-summary-count {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  font-family: "DM Serif Display", serif;
+}
+
+.schedule-summary-card--total .schedule-summary-count {
+  color: #1a1a1a;
+}
+
+.schedule-summary-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #555;
+}
+
+@media (max-width: 700px) {
+  .schedule-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-summary-card {
+    padding: 1rem 0.75rem;
+  }
+
+  .schedule-summary-count {
+    font-size: 1.5rem;
+  }
+}

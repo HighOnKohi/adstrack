@@ -256,3 +256,97 @@
 .calendar-day-item-name {
   color: #1a1a1a;
 }
+
+/* Calendar Legend & Type Filters */
+.calendar-legend {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.calendar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+  font-weight: 500;
+  color: #1a1a1a;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.calendar-legend-item.active {
+  background: #f5f5f5;
+  border-color: #bbb;
+}
+
+.calendar-legend-item.inactive {
+  opacity: 0.45;
+  background: #fafafa;
+}
+
+.calendar-legend-item:hover {
+  background: #eee;
+}
+
+.calendar-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.calendar-legend-label {
+  color: inherit;
+}
+
+/* Multi-type day dots */
+.calendar-cell--day {
+  position: relative;
+}
+
+.calendar-cell--has-multi {
+  background: #a71a2b;
+  color: white;
+  border-color: #a71a2b;
+}
+
+.calendar-cell--has-multi:hover {
+  background: #8a1524;
+  border-color: #8a1524;
+}
+
+.calendar-type-dots {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.calendar-type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Day detail type badge */
+.calendar-day-type-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-left: 0.35rem;
+}
