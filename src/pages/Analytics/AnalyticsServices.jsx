@@ -1,25 +1,27 @@
 import { db } from "../../config/fbConf.js";
 import {
   collection,
-  getDocs,
   query,
   orderBy,
+  onSnapshot,
 } from "firebase/firestore";
 import { getSchoolYears } from "../Schools/SchoolsServices.jsx";
 import jsPDF from "jspdf";
 
 // ─── Data Fetching ──────────────────────────────────────────────
 
-export async function fetchAllMeetings() {
+export function listenToMeetings(callback) {
   const q = query(collection(db, "Meetings"), orderBy("Schedule_Date", "asc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  });
 }
 
-export async function fetchAllSchools() {
+export function listenToSchools(callback) {
   const q = query(collection(db, "Schools"), orderBy("Name", "asc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  });
 }
 
 // ─── Date helpers ───────────────────────────────────────────────

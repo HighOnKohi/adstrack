@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { db } from "../../config/fbConf.js";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { closeIcon } from "../../assets/Icons/index.js";
 import "./Calendar.css";
 
@@ -187,6 +187,19 @@ function Calendar() {
     };
     fetch();
   }, []);
+
+  const handleMarkAsDone = async (meetingId) => {
+    try {
+      await updateDoc(doc(db, "Meetings", meetingId), {
+        Status: "Done",
+      });
+      setMeetings((prev) =>
+        prev.map((m) => (m.id === meetingId ? { ...m, Status: "Done" } : m)),
+      );
+    } catch (err) {
+      console.error("Failed to mark as done:", err);
+    }
+  };
 
   const meetingsByDay = useMemo(() => {
     const map = {};
@@ -426,6 +439,16 @@ function Calendar() {
                             ? m.Type_Other || "Others"
                             : meetingType}
                         </span>
+                        {m._scheduleDate && m._scheduleDate < new Date() && (m.Status || "Pending") !== "Done" && (
+                          <button
+                            type="button"
+                            className="calendar-mark-done-btn"
+                            onClick={() => handleMarkAsDone(m.id)}
+                            title="Mark as Done"
+                          >
+                            ✓ Done
+                          </button>
+                        )}
                       </span>
                     </li>
                   );

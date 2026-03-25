@@ -15,8 +15,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  fetchAllMeetings,
-  fetchAllSchools,
+  listenToMeetings,
+  listenToSchools,
   filterDoneMeetings,
   buildVisitsOverTime,
   buildTopSchoolsByEnrollees,
@@ -51,22 +51,31 @@ function Analytics() {
   const exportRef = useRef(null);
 
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      try {
-        const [meetings, schools] = await Promise.all([
-          fetchAllMeetings(),
-          fetchAllSchools(),
-        ]);
-        setAllMeetings(meetings);
-        setAllSchools(schools);
-      } catch (err) {
-        console.error("Failed to load analytics data:", err);
-      } finally {
+    let meetingsLoaded = false;
+    let schoolsLoaded = false;
+
+    const checkLoading = () => {
+      if (meetingsLoaded && schoolsLoaded) {
         setLoading(false);
       }
-    }
-    load();
+    };
+
+    const unsubMeetings = listenToMeetings((data) => {
+      setAllMeetings(data);
+      meetingsLoaded = true;
+      checkLoading();
+    });
+
+    const unsubSchools = listenToSchools((data) => {
+      setAllSchools(data);
+      schoolsLoaded = true;
+      checkLoading();
+    });
+
+    return () => {
+      unsubMeetings();
+      unsubSchools();
+    };
   }, []);
 
   useEffect(() => {
