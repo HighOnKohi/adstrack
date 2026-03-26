@@ -7,6 +7,7 @@ const TYPE_CONFIG = {
   Meeting: { emoji: "🤝", bg: "#e8f5e9", color: "#2e7d32", border: "#c8e6c9" },
   Advertising: { emoji: "📢", bg: "#fff8e1", color: "#f57f17", border: "#ffecb3" },
   "Career talk": { emoji: "🗣️", bg: "#e3f2fd", color: "#1565c0", border: "#bbdefb" },
+  "Follow-Up": { emoji: "🔄", bg: "#e1f5fe", color: "#0288d1", border: "#b3e5fc" },
   Others: { emoji: "📋", bg: "#ffebee", color: "#c62828", border: "#ffcdd2" },
 };
 
@@ -32,7 +33,7 @@ export default function ScheduleSummary() {
   });
 
   const counts = useMemo(() => {
-    const result = { Meeting: 0, Advertising: 0, "Career talk": 0, Others: 0 };
+    const result = { Meeting: 0, Advertising: 0, "Career talk": 0, "Follow-Up": 0, Others: 0 };
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
@@ -54,7 +55,7 @@ export default function ScheduleSummary() {
     return result;
   }, [meetings]);
 
-  const total = counts.Meeting + counts.Advertising + counts["Career talk"] + counts.Others;
+  const total = counts.Meeting + counts.Advertising + counts["Career talk"] + counts["Follow-Up"] + counts.Others;
 
   return (
     <div className="schedule-summary">

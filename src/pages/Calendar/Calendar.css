@@ -128,9 +128,18 @@
   }
 }
 
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(167, 26, 43, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(167, 26, 43, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(167, 26, 43, 0); }
+}
+
 .calendar-cell--day.calendar-cell--today {
-  border: 2px solid #1a1a1a;
-  font-weight: 700;
+  border: 2px solid #a71a2b !important;
+  font-weight: 800;
+  z-index: 10;
+  position: relative;
+  animation: pulseGlow 2.5s infinite;
 }
 
 /* Day detail panel */

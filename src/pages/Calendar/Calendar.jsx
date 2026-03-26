@@ -8,7 +8,7 @@ const TYPE_COLORS = {
   Meeting: { bg: "#2e7d32", light: "#e8f5e9", text: "#2e7d32" },
   Advertising: { bg: "#f9a825", light: "#fff8e1", text: "#f57f17" },
   "Career talk": { bg: "#1565c0", light: "#e3f2fd", text: "#1565c0" },
-  "Follow-Up": { bg: "#c2185b", light: "#fce4ec", text: "#c2185b" },
+  "Follow-Up": { bg: "#039be5", light: "#e1f5fe", text: "#0288d1" },
   Others: { bg: "#c62828", light: "#ffebee", text: "#c62828" },
 };
 
