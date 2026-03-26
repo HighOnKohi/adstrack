@@ -138,7 +138,7 @@ function Analytics() {
     <div className="analytics-page">
       <div className="analytics-header">
         <div>
-          <h1>Analytics Dashboard</h1>
+          <h1>Statistics Dashboard</h1>
           <p>
             Visualize school visits, enrollment trends, and conversion metrics.
           </p>
