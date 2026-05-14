@@ -23,6 +23,12 @@ export const STOCK_PRIORITY = {
   "In Stock": 3,
 };
 
+export const CONDITION_OPTIONS = [
+  { value: "Good", label: "Good", color: "#0f9d58" },
+  { value: "Excellent", label: "Excellent", color: "#e37400" },
+  { value: "For Replacement", label: "For Replacement", color: "#d93025" },
+];
+
 export function computeStatus(quantity) {
   const q = Number(quantity) || 0;
   if (q <= 0) return "Out of Stock";
@@ -105,11 +111,13 @@ export function watchInventoryItems(onUpdate, onError) {
   return onSnapshot(
     inventoryQuery,
     (snapshot) => {
-      const items = snapshot.docs.map((docSnap) => ({
-        docId: docSnap.id,
-        ...docSnap.data(),
-        status: computeStatus(docSnap.data()?.quantity),
-      }));
+      const items = snapshot.docs
+        .map((docSnap) => ({
+          docId: docSnap.id,
+          ...docSnap.data(),
+          status: computeStatus(docSnap.data()?.quantity),
+        }))
+        .filter((item) => !item.isDeleted);
       onUpdate(items);
     },
     (error) => {
@@ -182,7 +190,10 @@ export async function updateInventoryItem(docId, updates) {
 
 export async function deleteInventoryItem(docId) {
   const itemRef = doc(db, INVENTORY_COLLECTION, docId);
-  await deleteDoc(itemRef);
+  await updateDoc(itemRef, {
+    isDeleted: true,
+    archivedAt: serverTimestamp(),
+  });
 }
 
 // ─── Phase 2: QR & Audit Trail helpers ──────────────────────────
@@ -243,4 +254,45 @@ export async function fetchItemLogs(itemDocId) {
   });
 
   return logs;
+}
+
+/**
+ * Fetch all InventoryLogs and compute the latest timestamp per item.
+ * Returns a Map<itemDocId, Date>.
+ */
+export function watchLatestLogTimestamps(onUpdate, onError) {
+  const logsQuery = query(collection(db, LOGS_COLLECTION));
+
+  return onSnapshot(
+    logsQuery,
+    (snapshot) => {
+      const latestMap = {};
+      snapshot.docs.forEach((docSnap) => {
+        const data = docSnap.data();
+        const itemDocId = data.itemDocId;
+        if (!itemDocId) return;
+
+        let d = null;
+        const ts = data.timestamp;
+        if (ts?.toDate && typeof ts.toDate === "function") {
+          d = ts.toDate();
+        } else if (ts?.seconds) {
+          d = new Date(ts.seconds * 1000);
+        } else if (ts) {
+          d = new Date(ts);
+        }
+
+        if (d && !isNaN(d.getTime())) {
+          if (!latestMap[itemDocId] || d > latestMap[itemDocId]) {
+            latestMap[itemDocId] = d;
+          }
+        }
+      });
+      onUpdate(latestMap);
+    },
+    (error) => {
+      if (onError) onError(error);
+      console.error("InventoryLogs realtime update failed:", error);
+    }
+  );
 }

@@ -4,11 +4,11 @@ import { collection, getDocs } from "firebase/firestore";
 import "./ScheduleSummary.css";
 
 const TYPE_CONFIG = {
-  Meeting: { emoji: "🤝", bg: "#e8f5e9", color: "#2e7d32", border: "#c8e6c9" },
-  Advertising: { emoji: "📢", bg: "#fff8e1", color: "#f57f17", border: "#ffecb3" },
-  "Career talk": { emoji: "🗣️", bg: "#e3f2fd", color: "#1565c0", border: "#bbdefb" },
-  "Follow-Up": { emoji: "🔄", bg: "#e1f5fe", color: "#0288d1", border: "#b3e5fc" },
-  Others: { emoji: "📋", bg: "#ffebee", color: "#c62828", border: "#ffcdd2" },
+  Meeting: { icon: "groups", bg: "#e8f5e9", color: "#2e7d32", border: "#c8e6c9" },
+  Advertising: { icon: "campaign", bg: "#fff8e1", color: "#f57f17", border: "#ffecb3" },
+  "Career talk": { icon: "record_voice_over", bg: "#e3f2fd", color: "#1565c0", border: "#bbdefb" },
+  "Follow-Up": { icon: "sync", bg: "#e1f5fe", color: "#0288d1", border: "#b3e5fc" },
+  Others: { icon: "assignment", bg: "#ffebee", color: "#c62828", border: "#ffcdd2" },
 };
 
 export default function ScheduleSummary() {
@@ -60,7 +60,8 @@ export default function ScheduleSummary() {
   return (
     <div className="schedule-summary">
       <h3 className="schedule-summary-title">
-        📅 Monthly Schedule Summary — {monthLabel}
+        <span className="material-symbols-outlined" style={{ fontSize: '1.15rem', verticalAlign: 'middle', marginRight: '0.35rem' }}>calendar_month</span>
+        Monthly Schedule Summary — {monthLabel}
       </h3>
       <div className="schedule-summary-grid">
         {Object.entries(TYPE_CONFIG).map(([type, config]) => (
@@ -72,7 +73,7 @@ export default function ScheduleSummary() {
               borderColor: config.border,
             }}
           >
-            <span className="schedule-summary-emoji">{config.emoji}</span>
+            <span className="schedule-summary-icon material-symbols-outlined" style={{ color: config.color }}>{config.icon}</span>
             <span
               className="schedule-summary-count"
               style={{ color: config.color }}
@@ -85,7 +86,7 @@ export default function ScheduleSummary() {
         <div
           className="schedule-summary-card schedule-summary-card--total"
         >
-          <span className="schedule-summary-emoji">📊</span>
+          <span className="schedule-summary-icon material-symbols-outlined">bar_chart</span>
           <span className="schedule-summary-count">{total}</span>
           <span className="schedule-summary-label">Total</span>
         </div>

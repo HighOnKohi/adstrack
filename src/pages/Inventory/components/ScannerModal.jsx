@@ -224,7 +224,7 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
               className="scanner-action-btn scanner-action-add"
               onClick={() => handleSelectAction("add")}
             >
-              <span className="scanner-action-icon">➕</span>
+              <span className="scanner-action-icon material-symbols-outlined">add_circle</span>
               <span className="scanner-action-label">Add Stock</span>
               <span className="scanner-action-desc">
                 Increase item quantity
@@ -235,7 +235,7 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
               className="scanner-action-btn scanner-action-deduct"
               onClick={() => handleSelectAction("deduct")}
             >
-              <span className="scanner-action-icon">➖</span>
+              <span className="scanner-action-icon material-symbols-outlined">remove_circle</span>
               <span className="scanner-action-label">Deduct Stock</span>
               <span className="scanner-action-desc">
                 Decrease item quantity
@@ -295,7 +295,7 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
         {/* Step: Result */}
         {step === STEPS.RESULT && (
           <div className="scanner-result">
-            <div className="scanner-result-icon">✅</div>
+            <div className="scanner-result-icon"><span className="material-symbols-outlined" style={{ fontSize: '3rem', color: '#2e7d32' }}>check_circle</span></div>
             <p className="scanner-result-message">{resultMessage}</p>
             <div className="scanner-result-actions">
               <button

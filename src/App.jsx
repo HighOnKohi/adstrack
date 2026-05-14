@@ -11,13 +11,12 @@ import Inventory from "./pages/Inventory/Inventory.jsx";
 import Analytics from "./pages/Analytics/Analytics.jsx";
 
 import Schools from "./pages/Schools/Schools.jsx";
-import ManageUsers from "./pages/ManageUsers/ManageUsers.jsx";
 
 //Global imports
 import Layout from "./GlobalComponents/Layout.jsx";
 
 // Auth
-import { RequireAuth, RequireAdmin } from "./context/AuthContext.jsx";
+import { RequireAuth } from "./context/AuthContext.jsx";
 
 function App() {
   return (
@@ -38,14 +37,6 @@ function App() {
         <Route path="/analytics" element={<Analytics />} />
 
         <Route path="/schools" element={<Schools />} />
-        <Route
-          path="/manage-users"
-          element={
-            <RequireAdmin>
-              <ManageUsers />
-            </RequireAdmin>
-          }
-        />
       </Route>
     </Routes>
   );
@@ -53,6 +44,3 @@ function App() {
 
 export default App;
 
-{
-  /* <Route path="/test" element={<Test />} /> */
-}

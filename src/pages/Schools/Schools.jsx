@@ -5,6 +5,7 @@ import { db } from "../../config/fbConf.js";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { addIcon, closeIcon } from "../../assets/Icons/index.js";
 import { useAlert } from "../../GlobalComponents/useAlert.js";
+import toast from "react-hot-toast";
 import {
   ProvinceSelector,
   MunicipalitySelector,
@@ -201,13 +202,7 @@ function Schools() {
             onDelete={handleDeleteClick}
             showStats={showStats}
             onSaveStats={async (id, data) => {
-              try {
-                await updateSchoolEnrollment(id, data);
-                showAlert("Statistics updated successfully", "Success", "success");
-              } catch (e) {
-                console.error("Error updating stats:", e);
-                showAlert("Error updating statistics", "Error", "error");
-              }
+              await updateSchoolEnrollment(id, data);
             }}
           />
         ))}

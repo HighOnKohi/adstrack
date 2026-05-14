@@ -183,10 +183,21 @@ export function exportToCSV(visitsData, enrolleesData, conversionData, filename 
   URL.revokeObjectURL(url);
 }
 
-export function exportToPDF(summary, visitsData, enrolleesData, conversionData) {
+export function exportToPDF(summary, visitsData, enrolleesData, conversionData, chartImages = {}) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   let y = 20;
+
+  // Helper: embed a chart image
+  const addChartImage = (imgData) => {
+    if (!imgData) return;
+    const imgProps = doc.getImageProperties(imgData);
+    const imgWidthMm = pageWidth - 28; // 14mm margins each side
+    const imgHeightMm = (imgProps.height * imgWidthMm) / imgProps.width;
+    if (y + imgHeightMm > 270) { doc.addPage(); y = 20; }
+    doc.addImage(imgData, "PNG", 14, y, imgWidthMm, imgHeightMm);
+    y += imgHeightMm + 8;
+  };
 
   // Title
   doc.setFontSize(18);
@@ -238,7 +249,8 @@ export function exportToPDF(summary, visitsData, enrolleesData, conversionData) 
     doc.text(String(row.count), 80, y);
     y += 5;
   });
-  y += 8;
+  y += 6;
+  addChartImage(chartImages.lineChart);
 
   // Top Schools
   if (y > 240) { doc.addPage(); y = 20; }
@@ -259,7 +271,8 @@ export function exportToPDF(summary, visitsData, enrolleesData, conversionData) 
     doc.text(String(row.total), 120, y);
     y += 5;
   });
-  y += 8;
+  y += 6;
+  addChartImage(chartImages.barChart);
 
   // Conversion
   if (y > 250) { doc.addPage(); y = 20; }
@@ -274,6 +287,8 @@ export function exportToPDF(summary, visitsData, enrolleesData, conversionData) 
     doc.text(`${row.name}: ${row.value.toLocaleString()}`, 14, y);
     y += 5;
   });
+  y += 6;
+  addChartImage(chartImages.pieChart);
 
   doc.save("adstrack_analytics_report.pdf");
 }

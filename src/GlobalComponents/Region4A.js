@@ -1,4 +1,21 @@
-export const provinces4A = ["Batangas", "Cavite", "Laguna", "Quezon", "Rizal"];
+export const provinces4A = [
+  // Region 4A (CALABARZON)
+  "Batangas",
+  "Cavite",
+  "Laguna",
+  "Quezon",
+  "Rizal",
+  // NCR (Metro Manila)
+  "Metro Manila",
+  // Region 3 (nearby)
+  "Bulacan",
+  "Pampanga",
+  // Region 4B (MIMAROPA, nearby)
+  "Marinduque",
+  "Occidental Mindoro",
+  "Oriental Mindoro",
+];
+
 export const cities4A = [
   "Antipolo", // Rizal
   "Bacoor", // Cavite
@@ -23,11 +40,13 @@ export const cities4A = [
   "Trece Martires", // Cavite
   "Tayabas", // Quezon
 ];
+
 export const batangasMunicipalities = [
   "Agoncillo",
   "Alitagtag",
   "Balayan",
   "Balete",
+  "Batangas City",
   "Bauan",
   "Calatagan",
   "Cuenca",
@@ -35,6 +54,7 @@ export const batangasMunicipalities = [
   "Laurel",
   "Lemery",
   "Lian",
+  "Lipa",
   "Lobo",
   "Mabini",
   "Malvar",
@@ -48,34 +68,47 @@ export const batangasMunicipalities = [
   "San Nicolas",
   "San Pascual",
   "Santa Teresita",
-  "Santo Tomas", // also City but included here for reference
+  "Santo Tomas",
   "Taal",
   "Talisay",
+  "Tanauan",
   "Taysan",
   "Tingloy",
   "Tuy",
 ];
+
 export const caviteMunicipalities = [
   "Alfonso",
   "Amadeo",
+  "Bacoor",
+  "Carmona",
+  "Cavite City",
+  "Dasmariñas",
   "General Emilio Aguinaldo",
+  "General Mariano Alvarez (GMA)",
+  "General Trias",
+  "Imus",
   "Indang",
+  "Kawit",
   "Magallanes",
+  "Maragondon",
   "Mendez",
   "Naic",
-  "Tanza",
-  "Ternate",
-  "Silang",
-  "General Mariano Alvarez (GMA)",
-  "Kawit",
   "Noveleta",
   "Rosario",
+  "Silang",
+  "Tagaytay",
   "Tanza",
   "Ternate",
+  "Trece Martires",
 ];
+
 export const lagunaMunicipalities = [
   "Alaminos",
   "Bay",
+  "Biñan",
+  "Cabuyao",
+  "Calamba",
   "Calauan",
   "Cavinti",
   "Famy",
@@ -94,24 +127,34 @@ export const lagunaMunicipalities = [
   "Pangil",
   "Pila",
   "Rizal",
+  "San Pablo",
+  "San Pedro",
   "Santa Cruz",
   "Santa Maria",
+  "Santa Rosa",
   "Siniloan",
   "Victoria",
 ];
+
 export const quezonMunicipalities = [
+  "Agdangan",
   "Alabat",
   "Atimonan",
   "Buenavista",
+  "Burdeos",
+  "Calauag",
   "Candelaria",
   "Catanauan",
   "Dolores",
   "General Luna",
+  "General Nakar",
+  "Guinayangan",
   "Gumaca",
   "Infanta",
   "Jomalig",
   "Lopez",
   "Lucban",
+  "Lucena",
   "Macalelon",
   "Mauban",
   "Mulanay",
@@ -123,6 +166,7 @@ export const quezonMunicipalities = [
   "Pitogo",
   "Plaridel",
   "Polillo",
+  "Quezon",
   "Real",
   "Sampaloc",
   "San Andres",
@@ -131,17 +175,14 @@ export const quezonMunicipalities = [
   "San Narciso",
   "Sariaya",
   "Tagkawayan",
-  "Tayabas", // city included here
+  "Tayabas",
   "Tiaong",
   "Unisan",
-  "Buenavista",
-  "Lu CBEN",
-  "General Nakar",
-  "Macalelon",
-  "San Juan",
-  "San Francisco",
 ];
+
 export const rizalMunicipalities = [
+  "Angono",
+  "Antipolo",
   "Baras",
   "Binangonan",
   "Cainta",
@@ -154,46 +195,119 @@ export const rizalMunicipalities = [
   "Tanay",
   "Taytay",
   "Teresa",
-  "Angono",
 ];
 
-// EXAMPLE USAGE
+// ─── Nearby Provinces ───────────────────────────────────────────
 
-// import {
-//   provinces4A,
-//   batangasMunicipalities,
-//   caviteMunicipalities,
-//   lagunaMunicipalities,
-//   quezonMunicipalities,
-//   rizalMunicipalities,
-//   cities4A,
-// } from "./Region4A.js";
+export const metroManilaMunicipalities = [
+  "Caloocan",
+  "Las Piñas",
+  "Makati",
+  "Malabon",
+  "Mandaluyong",
+  "Manila",
+  "Marikina",
+  "Muntinlupa",
+  "Navotas",
+  "Parañaque",
+  "Pasay",
+  "Pasig",
+  "Pateros",
+  "Quezon City",
+  "San Juan",
+  "Taguig",
+  "Valenzuela",
+];
 
-// const provinceToMunicipalities = {
-//   Batangas: batangasMunicipalities,
-//   Cavite: caviteMunicipalities,
-//   Laguna: lagunaMunicipalities,
-//   Quezon: quezonMunicipalities,
-//   Rizal: rizalMunicipalities,
-// };
+export const bulacanMunicipalities = [
+  "Angat",
+  "Balagtas",
+  "Baliuag",
+  "Bocaue",
+  "Bulacan",
+  "Bustos",
+  "Calumpit",
+  "Doña Remedios Trinidad",
+  "Guiguinto",
+  "Hagonoy",
+  "Malolos",
+  "Marilao",
+  "Meycauayan",
+  "Norzagaray",
+  "Obando",
+  "Pandi",
+  "Paombong",
+  "Plaridel",
+  "Pulilan",
+  "San Ildefonso",
+  "San Jose del Monte",
+  "San Miguel",
+  "San Rafael",
+  "Santa Maria",
+];
 
-// function ProvinceSelector({ onSelect }) {
-//   return (
-//     <select onChange={(e) => onSelect(e.target.value)}>
-//       {provinces4A.map((p) => (
-//         <option key={p}>{p}</option>
-//       ))}
-//     </select>
-//   );
-// }
+export const pampangaMunicipalities = [
+  "Angeles",
+  "Apalit",
+  "Arayat",
+  "Bacolor",
+  "Candaba",
+  "Floridablanca",
+  "Guagua",
+  "Lubao",
+  "Mabalacat",
+  "Macabebe",
+  "Magalang",
+  "Masantol",
+  "Mexico",
+  "Minalin",
+  "Porac",
+  "San Fernando",
+  "San Luis",
+  "San Simon",
+  "Santa Ana",
+  "Santa Rita",
+  "Santo Tomas",
+  "Sasmuan",
+];
 
-// function MunicipalitySelector({ province }) {
-//   const list = provinceToMunicipalities[province] || [];
-//   return (
-//     <select>
-//       {list.map((m) => (
-//         <option key={m}>{m}</option>
-//       ))}
-//     </select>
-//   );
-// }
+export const marinduqueMunicipalities = [
+  "Boac",
+  "Buenavista",
+  "Gasan",
+  "Mogpog",
+  "Santa Cruz",
+  "Torrijos",
+];
+
+export const occidentalMindoroMunicipalities = [
+  "Abra de Ilog",
+  "Calintaan",
+  "Looc",
+  "Lubang",
+  "Magsaysay",
+  "Mamburao",
+  "Paluan",
+  "Rizal",
+  "Sablayan",
+  "San Jose",
+  "Santa Cruz",
+];
+
+export const orientalMindoroMunicipalities = [
+  "Baco",
+  "Bansud",
+  "Bongabong",
+  "Bulalacao",
+  "Calapan",
+  "Gloria",
+  "Mansalay",
+  "Naujan",
+  "Pinamalayan",
+  "Pola",
+  "Puerto Galera",
+  "Roxas",
+  "San Teodoro",
+  "Socorro",
+  "Victoria",
+];

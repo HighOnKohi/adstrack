@@ -17,17 +17,17 @@ export default function Homepage() {
       <div className="card-grid">
         <Card
           title="MISSION"
-          icon="🎯"
+          icon={<span className="material-symbols-outlined">track_changes</span>}
           text="As an OP-Siena school, Siena College of Taytay is engaged in the pursuit of developing individuals who are GOD-CENTERED TRUTH SEEKERS, SERVANT LEADERS and COMMUNITY BUILDERS."
         />
         <Card
           title="VISION"
-          icon="👁️"
+          icon={<span className="material-symbols-outlined">visibility</span>}
           text="Siena College of Taytay aspires to form graduates who are active contributors at the forefront of global change."
         />
         <Card
           title="OBJECTIVES"
-          icon="✔️"
+          icon={<span className="material-symbols-outlined">check_circle</span>}
           list={[
             "Continuously strengthen integration of values",
             "Consistently achieve excellence in education",

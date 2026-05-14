@@ -238,11 +238,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <a onClick={() => handleNav("/analytics")}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden style={{marginRight: 0}}><rect x="3" y="12" width="4" height="9" rx="1" fill="#ffffff"/><rect x="10" y="7" width="4" height="14" rx="1" fill="#ffffff"/><rect x="17" y="3" width="4" height="18" rx="1" fill="#ffffff"/></svg>{" "}Statistics
           </a>
-          {isAdmin ? (
-            <a onClick={() => handleNav("/manage-users")}>
-              <img src={directoryIcon} alt="Manage users" /> Manage Users
-            </a>
-          ) : null}
+
         </nav>
 
         <div className="sidebar-bottom">

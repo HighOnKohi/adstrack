@@ -51,7 +51,7 @@ function QRLabelModal({ item, onClose }) {
           className="inventory-modal-submit"
           onClick={handlePrint}
         >
-          🖨️ Print Label
+          <span className="material-symbols-outlined" style={{ fontSize: '1.1rem', verticalAlign: 'middle' }}>print</span> Print Label
         </button>
       </div>
     </div>

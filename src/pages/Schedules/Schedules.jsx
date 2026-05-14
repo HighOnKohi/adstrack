@@ -361,7 +361,7 @@ function Schedules() {
                 style={{ paddingLeft: "10px" }}
                 aria-hidden
               >
-                ▼
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
               </span>
             </button>
             {nameDropdownOpen && (
@@ -432,7 +432,7 @@ function Schedules() {
                 style={{ paddingLeft: "10px" }}
                 aria-hidden
               >
-                ▼
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
               </span>
             </button>
             {contractDropdownOpen && (
@@ -502,7 +502,7 @@ function Schedules() {
                 style={{ paddingLeft: "10px" }}
                 aria-hidden
               >
-                ▼
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
               </span>
             </button>
             {dateDropdownOpen && (
@@ -566,7 +566,7 @@ function Schedules() {
                 style={{ paddingLeft: "10px" }}
                 aria-hidden
               >
-                ▼
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
               </span>
             </button>
             {statusDropdownOpen && (
@@ -630,7 +630,7 @@ function Schedules() {
                 style={{ paddingLeft: "10px" }}
                 aria-hidden
               >
-                ▼
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
               </span>
             </button>
             {typeDropdownOpen && (

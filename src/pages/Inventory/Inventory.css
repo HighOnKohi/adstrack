@@ -53,6 +53,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex-wrap: wrap;
 }
 
 .inventory-add-button,
@@ -80,13 +81,39 @@
   background: #8f1723;
 }
 
-/* Match Schedules .function-buttons button (e.g. Print): normal weight, sentence case */
 .inventory-add-button {
   font-weight: 400;
   text-transform: none;
   gap: 0.5rem;
 }
 
+/* CSV export button */
+.inventory-csv-btn {
+  background: #a71a2b;
+  color: white !important;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  font-weight: 400;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  touch-action: manipulation;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+
+.inventory-csv-btn:hover {
+  background: #8f1723;
+  color: white !important;
+}
+
+/* Updated grid: checkbox + ID + name + category + qty + stock + condition + lastUpdated + actions */
 .inventory-table {
   width: 100%;
   margin-top: 0.65rem;
@@ -101,12 +128,12 @@
 .inventory-table-header,
 .inventory-row {
   display: grid;
-  grid-template-columns: 1.1fr 2.2fr 2fr 1fr 1fr 1.2fr;
+  grid-template-columns: 40px 0.9fr 1.8fr 1.4fr 0.9fr 0.9fr 1fr 1fr 0.8fr;
   align-items: center;
   gap: 0.4rem;
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
-  min-width: 900px;
+  min-width: 1050px;
 }
 
 .inventory-table-header {
@@ -189,10 +216,12 @@
 }
 
 .inventory-label-filter-chevron {
-  font-size: 0.6rem;
+  font-size: 1rem;
   opacity: 0.95;
   flex-shrink: 0;
   color: #fff;
+  display: inline-flex;
+  align-items: center;
 }
 
 .inventory-filter-dropdown {
@@ -256,6 +285,12 @@
   border: 1px solid #e8e8e8;
   color: #1f1f1f;
   font-size: 0.9rem;
+  transition: background-color 0.15s ease;
+}
+
+.inventory-row--selected {
+  background: #fef2f3;
+  border-color: #f0b1ba;
 }
 
 .inventory-row-actions {
@@ -263,6 +298,21 @@
   justify-content: flex-end;
   align-items: center;
   position: relative;
+}
+
+/* Checkbox in header and rows */
+.inventory-header-checkbox,
+.inventory-row-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventory-select-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #a71a2b;
 }
 
 /* Three-dot menu button */
@@ -280,6 +330,10 @@
   align-items: center;
   justify-content: center;
   transition: background 0.15s ease;
+}
+
+.inventory-dots-btn .material-symbols-outlined {
+  font-size: 1.3rem;
 }
 
 .inventory-dots-btn:hover {
@@ -346,7 +400,9 @@
 }
 
 .sort-arrow {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 .sort-arrow--inactive {
@@ -490,7 +546,7 @@
   font-size: 0.95rem;
 }
 
-/* Row + toolbar icons: larger, white on maroon buttons */
+/* Row + toolbar icons */
 .inventory-action-btn img,
 .inventory-add-button img,
 .inventory-scan-button img {
@@ -546,6 +602,25 @@
   background: #eceff1;
 }
 
+/* Condition pill */
+.inventory-condition-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.inventory-row-lastupdated {
+  font-size: 0.82rem;
+  color: #666;
+}
+
 .inventory-empty-state,
 .inventory-status-message,
 .inventory-error-message {
@@ -573,6 +648,33 @@
   color: #9f1f31;
   background: #ffe5e8;
   border: 1px solid #f0b1ba;
+}
+
+/* Skeleton loader */
+.inventory-skeleton-row {
+  pointer-events: none;
+}
+
+.skeleton-cell {
+  padding: 0.3rem 0;
+}
+
+.skeleton-pulse {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  width: 80%;
+}
+
+.skeleton-pulse--short {
+  width: 50%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .inventory-modal-overlay {
@@ -716,8 +818,8 @@ h6 {
 
   .inventory-table-header,
   .inventory-row {
-    grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1.2fr;
-    min-width: 700px;
+    grid-template-columns: 30px 0.8fr 1.6fr 1.2fr 0.8fr 0.8fr 0.9fr 0.9fr 0.7fr;
+    min-width: 850px;
   }
 
   .inventory-row-actions {
@@ -751,7 +853,8 @@ h6 {
   }
 
   .inventory-add-button,
-  .inventory-scan-button {
+  .inventory-scan-button,
+  .inventory-csv-btn {
     flex: 1;
     min-width: 0;
     font-size: 0.85rem;
@@ -803,27 +906,18 @@ h6 {
     margin-bottom: 2px;
   }
 
-  .inventory-row > div:nth-child(1)::before {
-    content: "ID";
-  }
+  .inventory-row > div:nth-child(1)::before { content: ""; }
+  .inventory-row > div:nth-child(2)::before { content: "ID"; }
+  .inventory-row > div:nth-child(3)::before { content: "Name"; }
+  .inventory-row > div:nth-child(4)::before { content: "Category"; }
+  .inventory-row > div:nth-child(5)::before { content: "Quantity"; }
+  .inventory-row > div:nth-child(6)::before { content: "Stock"; }
+  .inventory-row > div:nth-child(7)::before { content: "Condition"; }
+  .inventory-row > div:nth-child(8)::before { content: "Last Updated"; }
 
-  .inventory-row > div:nth-child(2)::before {
-    content: "Name";
-  }
-
-  .inventory-row > div:nth-child(3)::before {
-    content: "Category";
-  }
-
-  .inventory-row > div:nth-child(4)::before {
-    content: "Quantity";
-  }
-
-  .inventory-row > div:nth-child(5)::before {
-    content: "Stock";
-  }
-
-  .inventory-row > div:nth-child(5) {
+  .inventory-row > div:nth-child(6),
+  .inventory-row > div:nth-child(7),
+  .inventory-row > div:nth-child(8) {
     grid-column: 1 / -1;
   }
 
@@ -921,7 +1015,9 @@ h6 {
     padding: 0.7rem 0.65rem;
   }
 
-  .inventory-row > div:nth-child(5) {
+  .inventory-row > div:nth-child(6),
+  .inventory-row > div:nth-child(7),
+  .inventory-row > div:nth-child(8) {
     grid-column: 1;
   }
 

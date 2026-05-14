@@ -1,15 +1,20 @@
-import { useState } from "react";
-import { closeIcon, editIcon, trashIcon, addIcon } from "../../../assets/Icons/index.js";
+import { useState, useMemo } from "react";
+import toast from "react-hot-toast";
+import { closeIcon } from "../../../assets/Icons/index.js";
 import {
     getSchoolYears,
     sumEnrollmentForSchoolYears,
-    sumEnrollmentDraft,
 } from "../SchoolsServices.jsx";
 import { useAccomplishedMeetingsCount } from "../useAccomplishedMeetingsCount.js";
 
 function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
     const [showModal, setShowModal] = useState(false);
-    const [editingStats, setEditingStats] = useState(false);
+    const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
+    const [selectedYear, setSelectedYear] = useState("");
+    const [isAddingNewYear, setIsAddingNewYear] = useState(false);
+    const [newYearValue, setNewYearValue] = useState("");
+    const [enrolleeCount, setEnrolleeCount] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
     const schoolYears = getSchoolYears();
     const enrollment = school.data.Enrollment || {};
     const accomplishedMeetings = useAccomplishedMeetingsCount(
@@ -20,38 +25,82 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
         schoolYears,
     );
 
-    const [statsDraft, setStatsDraft] = useState(() => {
-        const draft = {};
-        schoolYears.forEach((yr) => {
-            draft[yr] = enrollment[yr] ?? "";
-        });
-        return draft;
-    });
+    // Total of ALL enrollment years (including newly added ones)
+    const enrollmentTotalAll = useMemo(() => {
+        return Object.values(enrollment).reduce((sum, val) => {
+            const n = typeof val === "number" && Number.isFinite(val) ? val : 0;
+            return sum + n;
+        }, 0);
+    }, [enrollment]);
 
-    // Sync draft when school data changes externally
-    const syncDraft = () => {
-        const latest = school.data.Enrollment || {};
-        const draft = {};
-        schoolYears.forEach((yr) => {
-            draft[yr] = latest[yr] ?? "";
-        });
-        setStatsDraft(draft);
-    };
+    // Gather all existing enrollment years (from data + generated)
+    const allYears = useMemo(() => {
+        const existingKeys = Object.keys(enrollment);
+        const combined = new Set([...schoolYears, ...existingKeys]);
+        return [...combined].sort();
+    }, [enrollment, schoolYears]);
 
-    const handleStatChange = (year, value) => {
-        setStatsDraft((prev) => ({ ...prev, [year]: value }));
-    };
-
-    const handleSaveStats = async () => {
-        const parsed = {};
-        schoolYears.forEach((yr) => {
-            const val = statsDraft[yr];
-            parsed[yr] = val === "" || val === null || val === undefined ? 0 : Number(val);
-        });
-        if (onSaveStats) {
-            await onSaveStats(school.id, parsed);
+    // Generate suggested new year based on current calendar year
+    const suggestedNewYear = useMemo(() => {
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const candidates = [];
+        for (let i = -1; i <= 2; i++) {
+            const yr = `${currentYear + i}-${currentYear + i + 1}`;
+            if (!allYears.includes(yr)) candidates.push(yr);
         }
-        setEditingStats(false);
+        return candidates.length > 0 ? candidates[0] : `${currentYear}-${currentYear + 1}`;
+    }, [allYears]);
+
+    const openEnrollmentModal = () => {
+        setSelectedYear("");
+        setIsAddingNewYear(false);
+        setNewYearValue(suggestedNewYear);
+        setEnrolleeCount("");
+        setShowEnrollmentModal(true);
+    };
+
+    const handleYearChange = (value) => {
+        if (value === "__add_new__") {
+            setIsAddingNewYear(true);
+            setSelectedYear("");
+            setNewYearValue(suggestedNewYear);
+            setEnrolleeCount("");
+        } else {
+            setIsAddingNewYear(false);
+            setSelectedYear(value);
+            const existing = enrollment[value];
+            setEnrolleeCount(existing !== undefined && existing !== null ? String(existing) : "");
+        }
+    };
+
+    const handleSaveEnrollment = async () => {
+        const yearKey = isAddingNewYear ? newYearValue.trim() : selectedYear;
+        if (!yearKey) {
+            toast.error("Please select or enter a school year.");
+            return;
+        }
+        if (isAddingNewYear && !/^\d{4}-\d{4}$/.test(yearKey)) {
+            toast.error("Please use the format YYYY-YYYY (e.g., 2025-2026).");
+            return;
+        }
+        const parsed = enrolleeCount === "" ? 0 : Number(enrolleeCount);
+        if (isNaN(parsed) || parsed < 0) {
+            toast.error("Please enter a valid number.");
+            return;
+        }
+        setIsSaving(true);
+        const updatedEnrollment = { ...enrollment, [yearKey]: parsed };
+        try {
+            if (onSaveStats) await onSaveStats(school.id, updatedEnrollment);
+            toast.success(`Enrollment for SY ${yearKey} updated.`);
+            setShowEnrollmentModal(false);
+        } catch (e) {
+            console.error("Error saving enrollment:", e);
+            toast.error("Failed to save enrollment data.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -64,8 +113,8 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                 {/* Front face — school info */}
                 <div className={`school-card-face ${!showStats ? "active" : ""}`}>
                     <h1> {school.data.Name} </h1>
-                    <p> 📍 {school.data.Address} </p>
-                    <p> ✉️ {school.data.Email} </p>
+                    <p><span className="material-symbols-outlined" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '0.25rem' }}>location_on</span> {school.data.Address} </p>
+                    <p><span className="material-symbols-outlined" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '0.25rem' }}>mail</span> {school.data.Email} </p>
                 </div>
 
                 {/* Back face — stats summary */}
@@ -74,10 +123,10 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                     <div className="school-stats-summary school-stats-summary-compact">
                         <div className="school-stats-metric">
                             <span className="school-stats-metric-label">
-                                Total enrollment (last 5 school years)
+                                Total enrollment (all school years)
                             </span>
                             <span className="school-stats-metric-value">
-                                {enrollmentTotalFiveYears.toLocaleString()}
+                                {enrollmentTotalAll.toLocaleString()}
                             </span>
                         </div>
                         <hr className="school-stats-inline-divider" aria-hidden="true" />
@@ -97,19 +146,36 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
 
             <div className="school-card-footer">
                 <div className="school-card-footer-divider" />
-                <a
-                    className="school-card-view-details-button"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        syncDraft();
-                        setEditingStats(false);
-                        setShowModal(true);
-                    }}
-                >
-                    {showStats ? "View Statistics ⟶" : "View Details ⟶"}
-                </a>
+                <div className="school-card-footer-buttons">
+                    <a
+                        className="school-card-footer-btn"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setShowModal(true);
+                        }}
+                    >
+                        <span className="material-symbols-outlined" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '0.25rem' }}>visibility</span>
+                        {showStats ? "View Statistics" : "View Details"}
+                    </a>
+                    <button
+                        type="button"
+                        className="school-card-footer-edit-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (showStats) {
+                                openEnrollmentModal();
+                            } else {
+                                if (onEdit) onEdit(school);
+                            }
+                        }}
+                    >
+                        <span className="material-symbols-outlined" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '0.25rem' }}>edit</span>
+                        Edit
+                    </button>
+                </div>
             </div>
 
+            {/* View Details Modal (non-stats) */}
             {showModal && !showStats && (
                 <div className="school-modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="school-detail-modal" onClick={(e) => e.stopPropagation()}>
@@ -150,25 +216,25 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                         </div>
                         <div className="school-detail-actions">
                             <button
-                                className="school-card-view-details-button"
+                                className="school-detail-action-btn"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setShowModal(false);
                                     if (onEdit) onEdit(school);
                                 }}
                             >
-                                <img src={editIcon} alt="Edit" style={{ width: 16, marginRight: 6 }} />
+                                <span className="material-symbols-outlined" style={{ fontSize: '1rem', marginRight: 6, color: '#fff' }}>edit</span>
                                 Edit
                             </button>
                             <button
-                                className="school-card-view-details-button delete"
+                                className="school-detail-action-btn school-detail-action-btn--delete"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setShowModal(false);
                                     if (onDelete) onDelete(school);
                                 }}
                             >
-                                <img src={trashIcon} alt="Delete" style={{ width: 16, marginRight: 6 }} />
+                                <span className="material-symbols-outlined" style={{ fontSize: '1rem', marginRight: 6, color: '#fff' }}>delete</span>
                                 Delete
                             </button>
                         </div>
@@ -176,10 +242,11 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                 </div>
             )}
 
+            {/* View Statistics Modal */}
             {showModal && showStats && (
                 <div className="school-modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="school-detail-modal" onClick={(e) => e.stopPropagation()}>
-                        <button className="close-modal-button" onClick={() => { setShowModal(false); setEditingStats(false); }}>
+                        <button className="close-modal-button" onClick={() => setShowModal(false)}>
                             <img src={closeIcon} alt="close" />
                         </button>
 
@@ -189,44 +256,30 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                             <div className="school-detail-section">
                                 <h3>Enrollment Statistics</h3>
                                 <div className="school-enrollment-years">
-                                    {schoolYears.map((yr, index) => (
+                                    {allYears.map((yr, index) => (
                                         <div
-                                            className={`school-enrollment-year-row${index < schoolYears.length - 1 ? " school-enrollment-year-row-divided" : ""}`}
+                                            className={`school-enrollment-year-row${index < allYears.length - 1 ? " school-enrollment-year-row-divided" : ""}`}
                                             key={yr}
                                         >
-                                            <div className="school-detail-item school-detail-item-tight">
-                                                <span className="school-detail-label">SY {yr}</span>
-                                                {editingStats ? (
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        className="school-stats-input"
-                                                        value={statsDraft[yr]}
-                                                        onChange={(e) =>
-                                                            handleStatChange(yr, e.target.value)
-                                                        }
-                                                        placeholder="0"
-                                                    />
-                                                ) : (
+                                            <div className="school-detail-item school-detail-item-tight school-enrollment-year-item">
+                                                <div className="school-enrollment-year-info">
+                                                    <span className="school-detail-label">SY {yr}</span>
                                                     <span className="school-detail-value">
-                                                        {enrollment[yr] !== undefined &&
-                                                        enrollment[yr] !== null
+                                                        {enrollment[yr] !== undefined && enrollment[yr] !== null
                                                             ? `${enrollment[yr].toLocaleString()} students`
                                                             : "No data"}
                                                     </span>
-                                                )}
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                                 <div className="school-enrollment-total-row">
                                     <span className="school-detail-label">
-                                        Total (last 5 school years)
+                                        Total (all school years)
                                     </span>
                                     <span className="school-detail-value school-enrollment-total-value">
-                                        {editingStats
-                                            ? `${sumEnrollmentDraft(statsDraft, schoolYears).toLocaleString()} students`
-                                            : `${enrollmentTotalFiveYears.toLocaleString()} students`}
+                                        {enrollmentTotalAll.toLocaleString()} students
                                     </span>
                                 </div>
                             </div>
@@ -245,33 +298,85 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
 
-                        <div className="school-detail-actions">
-                            {editingStats ? (
+            {/* Revamped Enrollment Edit Modal */}
+            {showEnrollmentModal && (
+                <div className="school-modal-overlay" onClick={() => setShowEnrollmentModal(false)} style={{ zIndex: 1100 }}>
+                    <div className="school-detail-modal school-edit-year-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="close-modal-button" onClick={() => setShowEnrollmentModal(false)}>
+                            <img src={closeIcon} alt="close" />
+                        </button>
+                        <h1>Edit Enrollment</h1>
+                        <p style={{ color: "#666", fontSize: "0.9rem", margin: "0 0 0.75rem 0" }}>
+                            {school.data.Name}
+                        </p>
+                        <div className="school-edit-year-form">
+                            <label className="school-input-label">School Year</label>
+                            <select
+                                className="school-stats-input"
+                                value={isAddingNewYear ? "__add_new__" : selectedYear}
+                                onChange={(e) => handleYearChange(e.target.value)}
+                            >
+                                <option value="" disabled>Select school year</option>
+                                {allYears.map((yr) => (
+                                    <option key={yr} value={yr}>
+                                        SY {yr} {enrollment[yr] !== undefined ? `(${enrollment[yr]} students)` : ""}
+                                    </option>
+                                ))}
+                                <option value="__add_new__">
+                                    + Add New School Year
+                                </option>
+                            </select>
+
+                            {isAddingNewYear && (
                                 <>
-                                    <button
-                                        className="school-card-view-details-button"
-                                        onClick={() => { syncDraft(); setEditingStats(false); }}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        className="school-card-view-details-button"
-                                        onClick={handleSaveStats}
-                                    >
-                                        <img src={addIcon} alt="Save" style={{ width: 16, marginRight: 6, filter: "invert(1) brightness(2)" }} />
-                                        Save
-                                    </button>
+                                    <label className="school-input-label" style={{ marginTop: "0.75rem" }}>New School Year</label>
+                                    <input
+                                        type="text"
+                                        className="school-stats-input"
+                                        value={newYearValue}
+                                        onChange={(e) => setNewYearValue(e.target.value)}
+                                        placeholder="e.g., 2025-2026"
+                                    />
                                 </>
-                            ) : (
-                                <button
-                                    className="school-card-view-details-button"
-                                    onClick={() => setEditingStats(true)}
-                                >
-                                    <img src={editIcon} alt="Edit" style={{ width: 16, marginRight: 6 }} />
-                                    Edit Statistics
-                                </button>
                             )}
+
+                            {(selectedYear || isAddingNewYear) && (
+                                <>
+                                    <label className="school-input-label" style={{ marginTop: "0.75rem" }}>Total Enrollees</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="school-stats-input"
+                                        value={enrolleeCount}
+                                        onChange={(e) => setEnrolleeCount(e.target.value)}
+                                        placeholder="0"
+                                        autoFocus
+                                    />
+                                </>
+                            )}
+                        </div>
+                        <div className="school-detail-actions" style={{ marginTop: "1.25rem" }}>
+                            <button
+                                className="school-detail-action-btn"
+                                onClick={() => setShowEnrollmentModal(false)}
+                                style={{ background: "#666" }}
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: '1rem', marginRight: 4, color: '#fff' }}>close</span>
+                                Cancel
+                            </button>
+                            <button
+                                className="school-detail-action-btn"
+                                onClick={handleSaveEnrollment}
+                                disabled={isSaving || (!selectedYear && !isAddingNewYear)}
+                                style={(!selectedYear && !isAddingNewYear) ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: '1rem', marginRight: 4, color: '#fff' }}>save</span>
+                                {isSaving ? "Saving..." : "Save"}
+                            </button>
                         </div>
                     </div>
                 </div>

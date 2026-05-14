@@ -38,7 +38,7 @@ export default function Header({ onMenuClick }) {
           onClick={onMenuClick}
           aria-label="Open menu"
         >
-          ☰
+          <span className="material-symbols-outlined">menu</span>
         </button>
         <div className="brand">
           <img src={logo} alt="SCT Logo" />

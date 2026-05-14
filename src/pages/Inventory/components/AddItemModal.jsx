@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { addIcon, closeIcon } from "../../../assets/Icons/index.js";
+import { CONDITION_OPTIONS } from "../InventoryServices.jsx";
 
 function AddItemModal({
   onClose,
   onSubmit,
   loading,
-  initialData = { id: "", name: "", category: "", quantity: "" },
+  initialData = { id: "", name: "", category: "", quantity: "", condition: "Good" },
   title = "Add Inventory Item",
   submitLabel = "Add Item",
   categories = [],
@@ -51,6 +52,7 @@ function AddItemModal({
       name,
       category,
       quantity: quantityValue,
+      condition: form.condition || "Good",
     });
   };
 
@@ -120,6 +122,20 @@ function AddItemModal({
               onChange={(e) => handleChange("quantity", e.target.value)}
               placeholder="0"
             />
+          </label>
+
+          <label>
+            Condition
+            <select
+              value={form.condition || "Good"}
+              onChange={(e) => handleChange("condition", e.target.value)}
+            >
+              {CONDITION_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </label>
 
           {error && <div className="inventory-error-message">{error}</div>}

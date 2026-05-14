@@ -432,7 +432,25 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
             role="row"
             aria-label="Filter by column"
           >
-            <div className="print-form-filter-spacer" aria-hidden />
+            <div className="print-form-filter-spacer" aria-hidden={false}>
+              <input
+                type="checkbox"
+                className="print-form-checkbox"
+                checked={filteredMeetings.length > 0 && filteredMeetings.every((m) => selectedMeetings.includes(m.id))}
+                onChange={() => {
+                  const allSelected = filteredMeetings.every((m) => selectedMeetings.includes(m.id));
+                  if (allSelected) {
+                    setSelectedMeetings([]);
+                  } else {
+                    const allIds = filteredMeetings.map((m) => m.id);
+                    setSelectedMeetings(allIds);
+                    // preload school data for all
+                    filteredMeetings.forEach((m) => { if (m.School_ID) fetchSchoolData(m.School_ID); });
+                  }
+                }}
+                aria-label="Select all schedules"
+              />
+            </div>
             <div
               className="print-form-filter-cell schedule-label-cell-filter"
               ref={nameFilterRef}
@@ -462,7 +480,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                   ) : null}
                 </span>
                 <span className="schedule-label-filter-chevron" aria-hidden>
-                  ▼
+                  <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
                 </span>
               </button>
               {nameDropdownOpen && (
@@ -532,7 +550,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                   ) : null}
                 </span>
                 <span className="schedule-label-filter-chevron" aria-hidden>
-                  ▼
+                  <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
                 </span>
               </button>
               {contractDropdownOpen && (
@@ -599,7 +617,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                   ) : null}
                 </span>
                 <span className="schedule-label-filter-chevron" aria-hidden>
-                  ▼
+                  <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
                 </span>
               </button>
               {dateDropdownOpen && (
@@ -660,7 +678,7 @@ function PrintCard({ meetings = [], schools = [], onClose }) {
                   ) : null}
                 </span>
                 <span className="schedule-label-filter-chevron" aria-hidden>
-                  ▼
+                  <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
                 </span>
               </button>
               {statusDropdownOpen && (

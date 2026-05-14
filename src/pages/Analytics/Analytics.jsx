@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -14,6 +14,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import html2canvas from "html2canvas";
 import {
   listenToMeetings,
   listenToSchools,
@@ -33,13 +34,64 @@ import "./Analytics.css";
 const PIE_COLORS = ["#a71a2b", "#1565c0"];
 const CHART_ACCENT = "#a71a2b";
 
-function getDefaultDateRange() {
+const pad = (n) => String(n).padStart(2, "0");
+const fmt = (d) =>
+  `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+const DATE_PRESETS = [
+  { key: "this_week", label: "This Week" },
+  { key: "this_month", label: "This Month" },
+  { key: "last_month", label: "Last Month" },
+  { key: "last_3_months", label: "Last 3 Months" },
+  { key: "last_6_months", label: "Last 6 Months" },
+  { key: "this_year", label: "This Year" },
+  { key: "last_year", label: "Last Year" },
+];
+
+function computePresetRange(key) {
   const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1);
-  const pad = (n) => String(n).padStart(2, "0");
-  const fmt = (d) =>
-    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  return { start: fmt(start), end: fmt(now) };
+  switch (key) {
+    case "this_week": {
+      const start = new Date(now);
+      start.setDate(now.getDate() - now.getDay());
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      return { start: fmt(start), end: fmt(end) };
+    }
+    case "this_month": {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      return { start: fmt(start), end: fmt(end) };
+    }
+    case "last_month": {
+      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 0);
+      return { start: fmt(start), end: fmt(end) };
+    }
+    case "last_3_months": {
+      const start = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+      return { start: fmt(start), end: fmt(now) };
+    }
+    case "last_6_months": {
+      const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+      return { start: fmt(start), end: fmt(now) };
+    }
+    case "this_year": {
+      const start = new Date(now.getFullYear(), 0, 1);
+      return { start: fmt(start), end: fmt(now) };
+    }
+    case "last_year": {
+      const start = new Date(now.getFullYear() - 1, 0, 1);
+      const end = new Date(now.getFullYear() - 1, 11, 31);
+      return { start: fmt(start), end: fmt(end) };
+    }
+    default:
+      return null;
+  }
+}
+
+function getDefaultDateRange() {
+  return computePresetRange("this_year");
 }
 
 function Analytics() {
@@ -47,8 +99,13 @@ function Analytics() {
   const [allSchools, setAllSchools] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState(getDefaultDateRange);
+  const [activePreset, setActivePreset] = useState("this_year");
   const [exportOpen, setExportOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const exportRef = useRef(null);
+  const lineChartRef = useRef(null);
+  const barChartRef = useRef(null);
+  const pieChartRef = useRef(null);
 
   useEffect(() => {
     let meetingsLoaded = false;
@@ -116,14 +173,70 @@ function Analytics() {
     [filteredMeetings, allSchools],
   );
 
+  const handlePresetClick = useCallback((key) => {
+    const range = computePresetRange(key);
+    if (range) {
+      setDateRange(range);
+      setActivePreset(key);
+    }
+  }, []);
+
+  const handleManualDateChange = useCallback((field, value) => {
+    setDateRange((prev) => ({ ...prev, [field]: value }));
+    setActivePreset(null);
+  }, []);
+
+  const captureChart = async (ref) => {
+    if (!ref.current) return null;
+    try {
+      // Small delay to let Recharts finish any resize/animations
+      await new Promise((r) => setTimeout(r, 250));
+      const canvas = await html2canvas(ref.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        foreignObjectRendering: false,
+        scrollY: -window.scrollY,
+        scrollX: -window.scrollX,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight,
+      });
+      if (canvas.width === 0 || canvas.height === 0) return null;
+      return canvas.toDataURL("image/png");
+    } catch (err) {
+      console.error("Chart capture failed:", err);
+      return null;
+    }
+  };
+
   const handleExportCSV = () => {
     exportToCSV(visitsData, enrolleesData, conversionData);
     setExportOpen(false);
   };
 
-  const handleExportPDF = () => {
-    exportToPDF(summary, visitsData, enrolleesData, conversionData);
+  const handleExportPDF = async () => {
     setExportOpen(false);
+    setIsExporting(true);
+    try {
+      // Scroll to top to ensure charts are visible for capture
+      window.scrollTo(0, 0);
+      await new Promise((r) => setTimeout(r, 300));
+
+      // Capture charts sequentially for reliability
+      const lineImg = await captureChart(lineChartRef);
+      const barImg = await captureChart(barChartRef);
+      const pieImg = await captureChart(pieChartRef);
+
+      exportToPDF(summary, visitsData, enrolleesData, conversionData, {
+        lineChart: lineImg,
+        barChart: barImg,
+        pieChart: pieImg,
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (loading) {
@@ -153,9 +266,7 @@ function Analytics() {
             <input
               type="date"
               value={dateRange.start}
-              onChange={(e) =>
-                setDateRange((prev) => ({ ...prev, start: e.target.value }))
-              }
+              onChange={(e) => handleManualDateChange("start", e.target.value)}
             />
           </label>
           <label>
@@ -163,11 +274,24 @@ function Analytics() {
             <input
               type="date"
               value={dateRange.end}
-              onChange={(e) =>
-                setDateRange((prev) => ({ ...prev, end: e.target.value }))
-              }
+              onChange={(e) => handleManualDateChange("end", e.target.value)}
             />
           </label>
+        </div>
+
+        <div className="analytics-presets">
+          {DATE_PRESETS.map((p) => (
+            <button
+              key={p.key}
+              type="button"
+              className={`analytics-preset-btn${
+                activePreset === p.key ? " analytics-preset-btn--active" : ""
+              }`}
+              onClick={() => handlePresetClick(p.key)}
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
 
         <div className="analytics-export-wrapper" ref={exportRef}>
@@ -180,8 +304,9 @@ function Analytics() {
           </button>
           {exportOpen && (
             <div className="analytics-export-menu">
-              <button type="button" onClick={handleExportPDF}>
-                <img src={printIcon} alt="" aria-hidden="true" className="analytics-export-icon icon-inverse" /> Export as PDF
+              <button type="button" onClick={handleExportPDF} disabled={isExporting}>
+                <img src={printIcon} alt="" aria-hidden="true" className="analytics-export-icon icon-inverse" />
+                {isExporting ? "Generating…" : "Export as PDF"}
               </button>
               <button type="button" onClick={handleExportCSV}>
                 <img src={analyticsIcon} alt="" aria-hidden="true" className="analytics-export-icon icon-inverse" /> Export as CSV
@@ -224,7 +349,7 @@ function Analytics() {
       {/* Charts grid */}
       <div className="analytics-charts-grid">
         {/* Line Chart */}
-        <div className="analytics-chart-card analytics-chart-card--wide">
+        <div className="analytics-chart-card analytics-chart-card--wide" ref={lineChartRef}>
           <h2>Schools Visited Over Time</h2>
           <p className="analytics-chart-desc">
             Monthly count of completed ("Done") school visits within the
@@ -273,7 +398,7 @@ function Analytics() {
         </div>
 
         {/* Bar Chart */}
-        <div className="analytics-chart-card">
+        <div className="analytics-chart-card" ref={barChartRef}>
           <h2>Top Schools by Enrollees</h2>
           <p className="analytics-chart-desc">
             Total enrollment across the last 5 school years.
@@ -321,7 +446,7 @@ function Analytics() {
         </div>
 
         {/* Pie Chart */}
-        <div className="analytics-chart-card">
+        <div className="analytics-chart-card" ref={pieChartRef}>
           <h2>Conversion Metrics</h2>
           <p className="analytics-chart-desc">
             Estimated event attendees vs. actual enrollees.

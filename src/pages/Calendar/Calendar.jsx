@@ -382,7 +382,7 @@ function Calendar() {
               : {}
           }
           onMouseEnter={handlePanelMouseEnter}
-          onMouseLeave={handleDayMouseLeave}
+          onMouseLeave={popupPosition ? handleDayMouseLeave : undefined}
         >
           <div className="calendar-day-panel-header">
             <h3>
@@ -446,7 +446,7 @@ function Calendar() {
                             onClick={() => handleMarkAsDone(m.id)}
                             title="Mark as Done"
                           >
-                            ✓ Done
+                            <span className="material-symbols-outlined" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '0.2rem' }}>check</span> Done
                           </button>
                         )}
                       </span>

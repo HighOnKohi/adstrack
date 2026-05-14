@@ -15,6 +15,12 @@ import {
   lagunaMunicipalities,
   quezonMunicipalities,
   rizalMunicipalities,
+  metroManilaMunicipalities,
+  bulacanMunicipalities,
+  pampangaMunicipalities,
+  marinduqueMunicipalities,
+  occidentalMindoroMunicipalities,
+  orientalMindoroMunicipalities,
 } from "../../GlobalComponents/Region4A.js";
 
 const provinceToMunicipalities = {
@@ -23,7 +29,14 @@ const provinceToMunicipalities = {
   Laguna: lagunaMunicipalities,
   Quezon: quezonMunicipalities,
   Rizal: rizalMunicipalities,
+  "Metro Manila": metroManilaMunicipalities,
+  Bulacan: bulacanMunicipalities,
+  Pampanga: pampangaMunicipalities,
+  Marinduque: marinduqueMunicipalities,
+  "Occidental Mindoro": occidentalMindoroMunicipalities,
+  "Oriental Mindoro": orientalMindoroMunicipalities,
 };
+
 
 export function ProvinceSelector({ value, onChange, name }) {
   return (

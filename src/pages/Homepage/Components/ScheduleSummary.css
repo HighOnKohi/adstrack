@@ -43,13 +43,8 @@
   border-color: #ddd;
 }
 
-.schedule-summary-emoji {
+.schedule-summary-icon {
   font-size: 1.5rem;
-}
-
-.schedule-summary-emoji img {
-  width: 20px;
-  height: 20px;
 }
 
 .schedule-summary-count {
