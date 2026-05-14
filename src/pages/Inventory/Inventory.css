@@ -673,8 +673,13 @@
 }
 
 @keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .inventory-modal-overlay {
@@ -805,6 +810,22 @@ h6 {
   font-family: "DM Serif Display", serif;
 }
 
+.sort-arrow {
+  color: #fff;
+}
+
+.sort-arrow--inactive {
+  color: #fff;
+}
+
+.sort-arrow--inactive:hover {
+  color: #fff;
+}
+
+.inventory-top-buttons .material-symbols-outlined {
+  color: #fff;
+}
+
 @media (max-width: 980px) {
   .inventory-filters {
     display: flex;
@@ -892,11 +913,11 @@ h6 {
     position: relative;
   }
 
-  .inventory-row > div {
+  .inventory-row>div {
     padding: 0.15rem 0;
   }
 
-  .inventory-row > div::before {
+  .inventory-row>div::before {
     display: block;
     font-size: 0.65rem;
     font-weight: 700;
@@ -906,18 +927,41 @@ h6 {
     margin-bottom: 2px;
   }
 
-  .inventory-row > div:nth-child(1)::before { content: ""; }
-  .inventory-row > div:nth-child(2)::before { content: "ID"; }
-  .inventory-row > div:nth-child(3)::before { content: "Name"; }
-  .inventory-row > div:nth-child(4)::before { content: "Category"; }
-  .inventory-row > div:nth-child(5)::before { content: "Quantity"; }
-  .inventory-row > div:nth-child(6)::before { content: "Stock"; }
-  .inventory-row > div:nth-child(7)::before { content: "Condition"; }
-  .inventory-row > div:nth-child(8)::before { content: "Last Updated"; }
+  .inventory-row>div:nth-child(1)::before {
+    content: "";
+  }
 
-  .inventory-row > div:nth-child(6),
-  .inventory-row > div:nth-child(7),
-  .inventory-row > div:nth-child(8) {
+  .inventory-row>div:nth-child(2)::before {
+    content: "ID";
+  }
+
+  .inventory-row>div:nth-child(3)::before {
+    content: "Name";
+  }
+
+  .inventory-row>div:nth-child(4)::before {
+    content: "Category";
+  }
+
+  .inventory-row>div:nth-child(5)::before {
+    content: "Quantity";
+  }
+
+  .inventory-row>div:nth-child(6)::before {
+    content: "Stock";
+  }
+
+  .inventory-row>div:nth-child(7)::before {
+    content: "Condition";
+  }
+
+  .inventory-row>div:nth-child(8)::before {
+    content: "Last Updated";
+  }
+
+  .inventory-row>div:nth-child(6),
+  .inventory-row>div:nth-child(7),
+  .inventory-row>div:nth-child(8) {
     grid-column: 1 / -1;
   }
 
@@ -1015,9 +1059,9 @@ h6 {
     padding: 0.7rem 0.65rem;
   }
 
-  .inventory-row > div:nth-child(6),
-  .inventory-row > div:nth-child(7),
-  .inventory-row > div:nth-child(8) {
+  .inventory-row>div:nth-child(6),
+  .inventory-row>div:nth-child(7),
+  .inventory-row>div:nth-child(8) {
     grid-column: 1;
   }
 

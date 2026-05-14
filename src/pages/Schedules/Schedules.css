@@ -70,7 +70,7 @@ body {
   padding-bottom: 0.5rem;
 }
 
-.schedules-content > div {
+.schedules-content>div {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -154,6 +154,10 @@ body {
 .schedules-meeting-table .schedule-label-filter-btn {
   padding-left: 0.75rem;
   padding-right: 0.5rem;
+}
+
+.schedule-label-filter-chevron .material-symbols-outlined {
+  color: white;
 }
 
 .schedules-meeting-table .schedule-label-filter-text {
@@ -738,9 +742,11 @@ body {
     flex-wrap: wrap;
     gap: 0.5rem;
   }
+
   .schedule-list-labels {
     display: none;
   }
+
   .schedule-list-container {
     width: 100%;
   }
@@ -748,13 +754,16 @@ body {
   .sched-form {
     width: min(94vw, 600px);
   }
+
   .sched-form-grid {
     grid-template-columns: 1fr;
   }
+
   .sched-submit {
     width: fit-content;
     padding: 0.4rem 1rem;
   }
+
   .schedule-label-filter-btn {
     font-size: 0.8rem;
   }
@@ -764,13 +773,16 @@ body {
   .schedule-card-row {
     gap: 0.2rem;
   }
+
   .schedule-card-cell {
     font-size: 0.8rem;
   }
+
   .action-button {
     font-size: 0.75rem;
     padding: 0.3rem 0.5rem;
   }
+
   .action-icon {
     margin-right: 0.2rem;
     width: 12px;

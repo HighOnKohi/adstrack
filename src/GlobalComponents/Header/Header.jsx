@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/templogo.png";
+import logo from "../../assets/sct-logo.png";
 import "./Header.css";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useAlert } from "../useAlert.js";
@@ -43,7 +43,7 @@ export default function Header({ onMenuClick }) {
         <div className="brand">
           <img src={logo} alt="SCT Logo" />
           <div>
-            <div className="brand-name">ADSTrack</div>
+            <div className="brand-name">ADSTRA</div>
             <div className="brand-sub">Admissions Tracking Client</div>
           </div>
         </div>

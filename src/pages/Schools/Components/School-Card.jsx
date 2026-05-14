@@ -216,17 +216,6 @@ function SchoolCard({ school, onEdit, onDelete, showStats, onSaveStats }) {
                         </div>
                         <div className="school-detail-actions">
                             <button
-                                className="school-detail-action-btn"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowModal(false);
-                                    if (onEdit) onEdit(school);
-                                }}
-                            >
-                                <span className="material-symbols-outlined" style={{ fontSize: '1rem', marginRight: 6, color: '#fff' }}>edit</span>
-                                Edit
-                            </button>
-                            <button
                                 className="school-detail-action-btn school-detail-action-btn--delete"
                                 onClick={(e) => {
                                     e.stopPropagation();

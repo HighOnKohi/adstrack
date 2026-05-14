@@ -38,6 +38,10 @@
   display: none;
 }
 
+.menu-button .material-symbols-outlined {
+  color: white;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -54,6 +58,7 @@
   font-size: 1rem;
   color: #1b1b1b;
 }
+
 .brand-sub {
   font-size: 0.7rem;
   color: #666;
@@ -134,22 +139,28 @@
   .menu-button {
     display: inline-flex;
   }
+
   .brand-sub {
     display: none;
   }
+
   .user-details {
     align-items: flex-start;
     text-align: left;
   }
+
   .header-right {
     gap: 0.5rem;
   }
+
   .username {
     max-width: 140px;
   }
+
   .role {
     max-width: 140px;
   }
+
   .user-email-line {
     max-width: 140px;
   }
@@ -159,22 +170,28 @@
   .username {
     max-width: 100px;
   }
+
   .user-email-line {
     display: none;
   }
+
   .role {
     font-size: 0.65rem;
   }
+
   .header-date {
     font-size: 0.8rem;
   }
+
   .header {
     padding: 0.5rem 0.7rem;
   }
+
   .header-center {
     flex: 0 1 auto;
     min-width: 0;
   }
+
   .brand-name {
     font-size: 0.9rem;
   }

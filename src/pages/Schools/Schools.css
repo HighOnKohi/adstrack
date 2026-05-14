@@ -350,6 +350,10 @@ body {
     font-size: 0.85rem;
 }
 
+.school-card-footer-btn .material-symbols-outlined {
+    color: #A71A2B;
+}
+
 .school-card-footer-btn:hover {
     color: #a71a2bb1;
 }
@@ -533,7 +537,7 @@ body {
 }
 
 .school-detail-action-btn--delete {
-    background-color: #d93025;
+    background-color: #A71A2B;
 }
 
 .school-detail-action-btn--small {
@@ -547,6 +551,7 @@ body {
     max-width: 440px;
     width: min(92vw, 440px);
 }
+
 .school-edit-year-form {
     display: flex;
     flex-direction: column;
