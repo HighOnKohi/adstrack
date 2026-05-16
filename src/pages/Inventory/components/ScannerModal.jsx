@@ -5,6 +5,7 @@ import {
   getInventoryItem,
   adjustItemQuantity,
   logInventoryAction,
+  CONDITION_OPTIONS,
 } from "../InventoryServices.jsx";
 import "./ScannerModal.css";
 
@@ -20,6 +21,7 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
   const [action, setAction] = useState(null); // "add" or "deduct"
   const [scannedItem, setScannedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [condition, setCondition] = useState("Good");
   const [error, setError] = useState("");
   const [resultMessage, setResultMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -63,6 +65,7 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
               return;
             }
             setScannedItem(item);
+            setCondition(item.condition || "Good");
             setStep(STEPS.QUANTITY);
           } catch (err) {
             setError(
@@ -130,6 +133,7 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
       const { oldQty, newQty } = await adjustItemQuantity(
         scannedItem.docId,
         delta,
+        condition,
       );
 
       await logInventoryAction({
@@ -161,6 +165,7 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
   const handleScanAnother = () => {
     setScannedItem(null);
     setQuantity(1);
+    setCondition("Good");
     setResultMessage("");
     setError("");
     setStep(STEPS.ACTION);
@@ -277,6 +282,21 @@ function ScannerModal({ onClose, userId, userName, onComplete }) {
                 className="scanner-quantity-input"
                 autoFocus
               />
+            </div>
+
+            <div className="scanner-quantity-row">
+              <label className="scanner-quantity-label">Update Condition</label>
+              <select
+                value={condition}
+                onChange={(e) => setCondition(e.target.value)}
+                className="scanner-quantity-input"
+              >
+                {CONDITION_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <button

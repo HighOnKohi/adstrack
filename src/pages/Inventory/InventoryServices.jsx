@@ -25,7 +25,7 @@ export const STOCK_PRIORITY = {
 
 export const CONDITION_OPTIONS = [
   { value: "Good", label: "Good", color: "#0f9d58" },
-  { value: "Excellent", label: "Excellent", color: "#e37400" },
+  { value: "For Repair", label: "For Repair", color: "#e37400" },
   { value: "For Replacement", label: "For Replacement", color: "#d93025" },
 ];
 
@@ -207,12 +207,14 @@ export async function getInventoryItem(docId) {
   return { docId: snap.id, ...snap.data(), status: computeStatus(snap.data()?.quantity) };
 }
 
-export async function adjustItemQuantity(docId, delta) {
+export async function adjustItemQuantity(docId, delta, newCondition) {
   const item = await getInventoryItem(docId);
   if (!item) throw new Error("Item not found");
   const oldQty = Number(item.quantity) || 0;
   const newQty = Math.max(0, oldQty + delta);
-  await updateInventoryItem(docId, { quantity: newQty });
+  const updates = { quantity: newQty };
+  if (newCondition !== undefined) updates.condition = newCondition;
+  await updateInventoryItem(docId, updates);
   return { oldQty, newQty, item };
 }
 

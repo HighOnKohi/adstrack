@@ -4,6 +4,8 @@ import { useAlert } from "../../GlobalComponents/useAlert.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import toast from "react-hot-toast";
 import { CSVLink } from "react-csv";
+import { renderToString } from "react-dom/server";
+import { QRCodeSVG } from "qrcode.react";
 import InventoryRow from "./components/InventoryRow.jsx";
 import AddItemModal from "./components/AddItemModal.jsx";
 import QRLabelModal from "./components/QRLabelModal.jsx";
@@ -86,6 +88,9 @@ function Inventory() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [filterMonthFrom, setFilterMonthFrom] = useState(() => new Date().toISOString().slice(0, 7));
+  const [filterMonthTo, setFilterMonthTo] = useState(() => new Date().toISOString().slice(0, 7));
+
   const categoryFilterRef = useRef(null);
   const stockFilterRef = useRef(null);
   const conditionFilterRef = useRef(null);
@@ -161,6 +166,16 @@ function Inventory() {
       if (selectedCategory && item.category !== selectedCategory) return false;
       if (selectedStock && status !== selectedStock) return false;
       if (selectedCondition && (item.condition || "Good") !== selectedCondition) return false;
+      // Month range filter on last updated
+      if (filterMonthFrom || filterMonthTo) {
+        const ts = logTimestamps[item.docId];
+        if (!ts) return false;
+        const itemMonth = ts instanceof Date
+          ? ts.toISOString().slice(0, 7)
+          : new Date(ts).toISOString().slice(0, 7);
+        if (filterMonthFrom && itemMonth < filterMonthFrom) return false;
+        if (filterMonthTo && itemMonth > filterMonthTo) return false;
+      }
       const name = (item.name || "").toLowerCase();
       const category = (item.category || "").toLowerCase();
       const id = (item.id || item.docId || "").toLowerCase();
@@ -208,7 +223,7 @@ function Inventory() {
       });
     }
     return result;
-  }, [items, debouncedSearch, selectedCategory, selectedStock, selectedCondition, sortConfig]);
+  }, [items, debouncedSearch, selectedCategory, selectedStock, selectedCondition, sortConfig, logTimestamps, filterMonthFrom, filterMonthTo]);
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
   const paginatedItems = useMemo(() => {
@@ -216,7 +231,7 @@ function Inventory() {
     return filteredItems.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredItems, currentPage]);
 
-  useEffect(() => { setCurrentPage(1); }, [debouncedSearch, selectedCategory, selectedStock, selectedCondition]);
+  useEffect(() => { setCurrentPage(1); }, [debouncedSearch, selectedCategory, selectedStock, selectedCondition, filterMonthFrom, filterMonthTo]);
 
   // Selection
   const handleSelectToggle = (docId) => {
@@ -262,6 +277,49 @@ function Inventory() {
       <body><h1>Inventory Report</h1><p class="print-date">Generated: ${new Date().toLocaleString()}</p>
       <table><thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Qty</th><th>Stock</th><th>Condition</th></tr></thead>
       <tbody>${rows}</tbody></table></body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 300);
+  };
+
+  // Print selected QR codes
+  const handlePrintQRCodes = () => {
+    if (selectedItems.size === 0) {
+      toast.error("Please select items to print QR codes.");
+      return;
+    }
+    const selected = items.filter((i) => selectedItems.has(i.docId));
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) { toast.error("Pop-up blocked. Please allow pop-ups."); return; }
+    const qrCards = selected.map((item) => {
+      const svgMarkup = renderToString(
+        <QRCodeSVG value={item.docId} size={150} level="M" />
+      );
+      return `<div class="qr-card">
+        <div class="qr-code">${svgMarkup}</div>
+        <div class="qr-info">
+          <div class="qr-name">${item.name || "Unnamed"}</div>
+          <div class="qr-cat">${item.category || "No Category"}</div>
+          <div class="qr-id">${item.id || item.docId}</div>
+        </div>
+      </div>`;
+    }).join("");
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>QR Codes - Inventory</title>
+      <style>
+        body{font-family:Arial,sans-serif;padding:20px;margin:0}
+        h1{color:#a71a2b;font-size:1.5rem;margin-bottom:4px}
+        .print-date{color:#666;font-size:0.8rem;margin-bottom:20px}
+        .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+        .qr-card{border:2px dashed #ddd;border-radius:12px;padding:16px;text-align:center;break-inside:avoid}
+        .qr-code{display:flex;justify-content:center;margin-bottom:10px}
+        .qr-name{font-weight:700;font-size:0.95rem;color:#1a1a1a}
+        .qr-cat{font-size:0.8rem;color:#666;text-transform:uppercase;letter-spacing:0.04em;margin-top:2px}
+        .qr-id{font-size:0.75rem;color:#999;font-family:monospace;margin-top:4px}
+        @media print{body{padding:10px}.qr-grid{grid-template-columns:repeat(3,1fr);gap:15px}.qr-card{border:2px dashed #ccc;page-break-inside:avoid}}
+      </style></head>
+      <body><h1>Inventory QR Labels</h1>
+      <p class="print-date">Generated: ${new Date().toLocaleString()} \u2022 ${selected.length} label(s)</p>
+      <div class="qr-grid">${qrCards}</div></body></html>`);
     printWindow.document.close();
     printWindow.focus();
     setTimeout(() => printWindow.print(), 300);
@@ -382,6 +440,9 @@ function Inventory() {
           <button className="inventory-add-button" type="button" onClick={handlePrintSelected}>
             <img src={printIcon} alt="Print" /> Print Selected
           </button>
+          <button className="inventory-add-button" type="button" onClick={handlePrintQRCodes}>
+            <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>qr_code_2</span> Print QR Codes
+          </button>
           <CSVLink data={csvData} filename={`inventory_${new Date().toISOString().slice(0, 10)}.csv`} className="inventory-csv-btn" aria-label="Export CSV">
             <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span> Export CSV
           </CSVLink>
@@ -413,6 +474,24 @@ function Inventory() {
             {CONDITION_OPTIONS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </div>
+      </div>
+
+      <div className="inventory-date-filter">
+        <div className="inventory-date-filter-fields">
+          <div className="inventory-filter-field">
+            <label htmlFor="filter-month-from">Updated From</label>
+            <input type="month" id="filter-month-from" value={filterMonthFrom} onChange={(e) => setFilterMonthFrom(e.target.value)} />
+          </div>
+          <div className="inventory-filter-field">
+            <label htmlFor="filter-month-to">Updated To</label>
+            <input type="month" id="filter-month-to" value={filterMonthTo} onChange={(e) => setFilterMonthTo(e.target.value)} />
+          </div>
+        </div>
+        {(filterMonthFrom || filterMonthTo) && (
+          <button type="button" className="inventory-date-clear-btn" onClick={() => { setFilterMonthFrom(""); setFilterMonthTo(""); }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '0.9rem' }}>close</span> Clear Date Filter
+          </button>
+        )}
       </div>
 
       <div className="inventory-table">
